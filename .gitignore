@@ -1,2 +1,6 @@
 node_modules
+coverage
 .DS_Store
+src/**/*.js
+test/**/*.js
+yarn.lock

@@ -11,7 +11,7 @@ describe("Array Converter", () => {
     })
 
     it("Should convert array of model", () => {
-        reflect.parameterProperties()
+        @reflect.parameterProperties()
         class AnimalClass {
             constructor(
                 public id: number,
@@ -33,14 +33,14 @@ describe("Array Converter", () => {
     })
 
     it("Should convert nested array inside model", () => {
-        reflect.parameterProperties()
+        @reflect.parameterProperties()
         class TagModel {
             constructor(
                 public id: number,
                 public name: string,
             ) { }
         }
-        reflect.parameterProperties()
+        @reflect.parameterProperties()
         class AnimalClass {
             constructor(
                 public id: number,
@@ -63,7 +63,18 @@ describe("Array Converter", () => {
         ])
     })
 
-    it("Should throw error if provided non array on expectedType", () => {
-        expect(() => convert(["123", "123", "123"], Number)).toThrow(ConversionError)
+
+    it("Should throw error if provided expectedType of type of array", () => {
+        @reflect.parameterProperties()
+        class AnimalClass {
+            constructor(
+                public id: number,
+                public name: string,
+                public deceased: boolean,
+                public birthday: Date
+            ) { }
+        }
+        expect(() => convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, [AnimalClass]))
+            .toThrow(ConversionError)
     })
 })

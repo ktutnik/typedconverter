@@ -4,7 +4,7 @@ import reflect from "tinspector"
 const convert = createConverter()
 
 describe("Nested Model", () => {
-    reflect.parameterProperties()
+    @reflect.parameterProperties()
     class ClientClass {
         constructor(
             public id: number,
@@ -13,7 +13,7 @@ describe("Nested Model", () => {
         ) { }
     }
 
-    reflect.parameterProperties()
+    @reflect.parameterProperties()
     class AnimalClass {
         constructor(
             public id: number,

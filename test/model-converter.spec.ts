@@ -4,8 +4,8 @@ import reflect from "tinspector"
 const convert = createConverter()
 
 describe("Model Converter", () => {
-    it.only("Should convert model and appropriate properties", () => {
-        reflect.parameterProperties()
+    it("Should convert model and appropriate properties", () => {
+        @reflect.parameterProperties()
         class AnimalClass {
             constructor(
                 public id: number,
@@ -21,7 +21,7 @@ describe("Model Converter", () => {
     })
 
     it("Should not convert excess properties", () => {
-        reflect.parameterProperties()
+        @reflect.parameterProperties()
         class AnimalClass {
             constructor(
                 public id: number,
@@ -34,25 +34,9 @@ describe("Model Converter", () => {
         expect(result).toEqual({ id: 200, name: "Mimi" })
     })
 
-    /*
-    it("Should not sanitized if no constructor property found", () => {
-        class AnimalClass {
-            constructor(
-                public id: number,
-                public name: string,
-                public deceased: boolean,
-                public birthday: Date
-            ) { }
-        }
-
-        const result = convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, AnimalClass)
-        expect(result).toBeInstanceOf(AnimalClass)
-        expect(result).toEqual({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" })
-    })
-    */
 
     it("Should allow undefined value", () => {
-        reflect.parameterProperties()
+        @reflect.parameterProperties()
         class AnimalClass {
             constructor(
                 public id: number,
@@ -68,7 +52,7 @@ describe("Model Converter", () => {
     })
 
     it("Should throw if provided non convertible value", () => {
-        reflect.parameterProperties()
+        @reflect.parameterProperties()
         class AnimalClass {
             constructor(
                 public id: number,
@@ -84,7 +68,7 @@ describe("Model Converter", () => {
     })
 
     it("Should throw if provided non convertible value", () => {
-        reflect.parameterProperties()
+        @reflect.parameterProperties()
         class AnimalClass {
             constructor(
                 public id: number,
@@ -100,7 +84,7 @@ describe("Model Converter", () => {
     })
 
     it("Should not populate optional properties with undefined", () => {
-        reflect.parameterProperties()
+        @reflect.parameterProperties()
         class AnimalClass {
             constructor(
                 public id: number,
@@ -116,17 +100,4 @@ describe("Model Converter", () => {
         expect(result).toEqual({ id: 200, name: "Mimi" })
     })
 
-    it("Should throw error if provided expectedType of type of array", () => {
-        reflect.parameterProperties()
-        class AnimalClass {
-            constructor(
-                public id: number,
-                public name: string,
-                public deceased: boolean,
-                public birthday: Date
-            ) { }
-        }
-        expect(() => convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, [AnimalClass]))
-            .toThrow(ConversionError)
-    })
 })

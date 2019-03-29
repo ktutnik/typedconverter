@@ -5,7 +5,7 @@ import reflect from "tinspector"
 // --------------------------------------------------------------------- //
 
 type Class = new (...args: any[]) => any
-type ConverterMap = Map<Function | string, Converter>
+type ConverterMap = Map<Function, Converter>
 
 type Converter = (value: any, path: string[], expectedType: Function | Function[], converters: ConverterMap) => any
 
@@ -100,7 +100,6 @@ namespace DefaultConverters {
             && typeof value !== "number"
             && typeof value !== "string"
         //---
-        if (Array.isArray(expectedType)) throw createConversionError(value, expectedType[0], path)
         const TheType = expectedType as Class
         //get reflection metadata of the class
         const reflection = reflect(TheType)
@@ -118,9 +117,8 @@ namespace DefaultConverters {
     }
 
     export function arrayConverter(value: {}[], path: string[], expectedType: Function | Function[], converters: ConverterMap): any {
-        //allow single value as array for url encoded
-        if (!Array.isArray(value)) value = [value]
         if (!Array.isArray(expectedType)) throw createConversionError(value, expectedType, path)
+        if (!Array.isArray(value)) throw createConversionError(value, expectedType[0], path)
         return value.map((x, i) => convert(x, path.concat(i.toString()), expectedType[0], converters))
     }
 }
@@ -152,9 +150,7 @@ function converter(option: { type?: Function | Function[], converters?: { key: F
         const mergedConverters: ConverterMap = new Map()
         mergedConverters.set(Number, DefaultConverters.numberConverter)
         mergedConverters.set(Boolean, DefaultConverters.booleanConverter)
-        mergedConverters.set(Date, DefaultConverters.dateConverter)
-        mergedConverters.set("Array", DefaultConverters.arrayConverter)
-        mergedConverters.set("Model", DefaultConverters.modelConverter);
+        mergedConverters.set(Date, DefaultConverters.dateConverter);
         (option.converters || []).forEach(x => mergedConverters.set(x.key, x.converter))
         return convert(value, path, type || option.type, mergedConverters)
     }
