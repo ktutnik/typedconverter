@@ -1,8 +1,14 @@
+.vscode
+coverage
+scripts
+src 
 test
-src
+.gitignore
 .npmignore
-tsconfig.json
+.travis.yml
 package-lock.json
 tsconfig.build.json
+tsconfig.json
 yarn-error.log
 yarn.lock
+jest.config.js

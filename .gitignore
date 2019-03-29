@@ -1,5 +1,6 @@
 node_modules
 coverage
+lib
 .DS_Store
 src/**/*.js
 test/**/*.js

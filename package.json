@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "test": "jest",
-    "compile": "tsc -p tsconfig.build.json"
+    "prepublish": "tsc -p tsconfig.build.json"
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",
