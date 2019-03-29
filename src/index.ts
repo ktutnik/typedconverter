@@ -5,9 +5,9 @@ import reflect from "tinspector"
 // --------------------------------------------------------------------- //
 
 type Class = new (...args: any[]) => any
-type ConverterMap = Map<Function, Converter>
+interface ConverterMap { key: Function, converter: Converter }
 
-type Converter = (value: any, path: string[], expectedType: Function | Function[], converters: ConverterMap) => any
+type Converter = (value: any, path: string[], expectedType: Function | Function[], converters: Map<Function, Converter>) => any
 
 class ConversionError extends Error {
     constructor(public issues: { path: string[], messages: string[] }, public status = 400) {
@@ -21,7 +21,7 @@ class ConversionError extends Error {
 // --------------------------------------------------------------------- //
 
 function createConversionError(value: any, typ: Function | Function[], path: string[]) {
-    const typeName = Array.isArray(typ) ? `Array<${typ[0].name}>`  : typ
+    const typeName = Array.isArray(typ) ? `Array<${typ[0].name}>`  : typ.name
     return new ConversionError({ path: path, messages: [`Unable to convert "${value}" into ${typeName}`] })
 }
 
@@ -78,7 +78,7 @@ namespace DefaultConverters {
         return result
     }
 
-    export function modelConverter(value: {}, path: string[], expectedType: Function | Function[], converters: ConverterMap): any {
+    export function modelConverter(value: {}, path: string[], expectedType: Function | Function[], converters: Map<Function, Converter>): any {
         //--- helper functions
         const isConvertibleToObject = (value: any) =>
             typeof value !== "boolean"
@@ -101,7 +101,7 @@ namespace DefaultConverters {
         return instance;
     }
 
-    export function arrayConverter(value: {}[], path: string[], expectedType: Function[], converters: ConverterMap): any {
+    export function arrayConverter(value: {}[], path: string[], expectedType: Function[], converters: Map<Function, Converter>): any {
         if (!Array.isArray(value)) throw createConversionError(value, expectedType, path)
         return value.map((x, i) => convert(x, path.concat(i.toString()), expectedType[0], converters))
     }
@@ -111,7 +111,7 @@ namespace DefaultConverters {
 // --------------------------- MAIN CONVERTER -------------------------- //
 // --------------------------------------------------------------------- //
 
-function convert(value: any, path: string[], expectedType: Function | Function[] | undefined, converters: ConverterMap) {
+function convert(value: any, path: string[], expectedType: Function | Function[] | undefined, converters: Map<Function, Converter>) {
     if (value === null || value === undefined) return undefined
     if (!expectedType) return value
     if (value.constructor === expectedType) return value;
@@ -126,9 +126,9 @@ function convert(value: any, path: string[], expectedType: Function | Function[]
         return DefaultConverters.modelConverter(value, path, expectedType as Class, converters)
 }
 
-function converter(option: { type?: Function | Function[], converters?: { key: Function, converter: Converter }[] } = {}) {
+function converter(option: { type?: Function | Function[], converters?: ConverterMap[] } = {}) {
     return (value: any, type?: Function | Function[], path: string[] = []) => {
-        const mergedConverters: ConverterMap = new Map()
+        const mergedConverters: Map<Function, Converter> = new Map()
         mergedConverters.set(Number, DefaultConverters.numberConverter)
         mergedConverters.set(Boolean, DefaultConverters.booleanConverter)
         mergedConverters.set(Date, DefaultConverters.dateConverter);
