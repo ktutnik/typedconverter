@@ -63,7 +63,6 @@ describe("Array Converter", () => {
         ])
     })
 
-
     it("Should throw error if provided expectedType of type of array", () => {
         @reflect.parameterProperties()
         class AnimalClass {

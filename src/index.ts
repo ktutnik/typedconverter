@@ -12,7 +12,7 @@ type Converter = (value: any, path: string[], expectedType: Function | Function[
 class ConversionError extends Error {
     constructor(public issues: { path: string[], messages: string[] }, public status = 400) {
         super()
-        Object.setPrototypeOf(this, Error.prototype)
+        Object.setPrototypeOf(this, ConversionError.prototype)
     }
 }
 
@@ -20,9 +20,9 @@ class ConversionError extends Error {
 // ------------------------------- HELPER ------------------------------ //
 // --------------------------------------------------------------------- //
 
-function createConversionError(value: any, typ: Function, path: string[]) {
-    const type = (typ as Class).name
-    return new ConversionError({ path: path, messages: [`Unable to convert "${value}" into ${type}`] })
+function createConversionError(value: any, typ: Function | Function[], path: string[]) {
+    const typeName = Array.isArray(typ) ? `Array<${typ[0].name}>`  : typ
+    return new ConversionError({ path: path, messages: [`Unable to convert "${value}" into ${typeName}`] })
 }
 
 //some object can't simply convertible to string https://github.com/emberjs/ember.js/issues/14922#issuecomment-278986178
@@ -31,21 +31,6 @@ function safeToString(value: any) {
         return value.toString()
     } catch (e) {
         return "[object Object]"
-    }
-}
-
-function isCustomClass(type: Function | Function[]) {
-    switch (Array.isArray(type) ? type[0] : type) {
-        case undefined:
-        case Boolean:
-        case String:
-        case Array:
-        case Number:
-        case Object:
-        case Date:
-            return false
-        default:
-            return true
     }
 }
 
@@ -116,9 +101,8 @@ namespace DefaultConverters {
         return instance;
     }
 
-    export function arrayConverter(value: {}[], path: string[], expectedType: Function | Function[], converters: ConverterMap): any {
-        if (!Array.isArray(expectedType)) throw createConversionError(value, expectedType, path)
-        if (!Array.isArray(value)) throw createConversionError(value, expectedType[0], path)
+    export function arrayConverter(value: {}[], path: string[], expectedType: Function[], converters: ConverterMap): any {
+        if (!Array.isArray(value)) throw createConversionError(value, expectedType, path)
         return value.map((x, i) => convert(x, path.concat(i.toString()), expectedType[0], converters))
     }
 }
@@ -138,11 +122,8 @@ function convert(value: any, path: string[], expectedType: Function | Function[]
     else if (converters.has(expectedType))
         return converters.get(expectedType)!(value, path, expectedType, converters)
     //if type of model and has no  converter, use DefaultObject converter
-    else if (isCustomClass(expectedType))
+    else 
         return DefaultConverters.modelConverter(value, path, expectedType as Class, converters)
-    //no converter, return the value
-    else
-        return value
 }
 
 function converter(option: { type?: Function | Function[], converters?: { key: Function, converter: Converter }[] } = {}) {

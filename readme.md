@@ -55,3 +55,25 @@ const data = convert({
     AnimalClass) 
 ```
 
+## Convert Array 
+Convert into array by providing array of type in the expected type.
+
+```typescript
+import createConverter from "typedconverter";
+
+const convert = createConverter()
+const numb = convert(["1", "2", "-3"], [Number])
+```
+
+## Custom Converter
+Provided custom converter on the configuration 
+
+```typescript
+import createConverter from "typedconverter";
+
+const convert = createConverter({ 
+    type: Boolean, 
+    converters: [{ key: Boolean, converter: x => "Custom Boolean" }] 
+})
+const numb = convert("True") //result: "Custom Boolean"
+```
