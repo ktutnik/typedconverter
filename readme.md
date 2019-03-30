@@ -37,7 +37,7 @@ import reflect from "tinspector"
 
 const convert = createConverter()
 
-reflect.parameterProperties()
+@reflect.parameterProperties()
 class AnimalClass {
     constructor(
         public id: number,
@@ -65,6 +65,33 @@ const convert = createConverter()
 const numb = convert(["1", "2", "-3"], [Number])
 ```
 
+## Convert Child Array
+Nested child array need to be decorate for TypeScript added design data type
+
+```typescript
+import createConverter from "typedconverter";
+
+@reflect.parameterProperties()
+class Tag {
+    constructor(
+        public name: string,
+    ) { }
+}
+
+@reflect.parameterProperties()
+class Animal {
+    constructor(
+        public name: string,
+        @reflect.array(Tag)
+        public tags: Tags
+    ) { }
+}
+
+const convert = createConverter()
+//tags is instance of Tag class
+const numb = convert({name: "Mimi", tags: [{name: "Susi"}, {name: "Lorem"}]}, Animal)
+```
+
 ## Custom Converter
 Provided custom converter on the configuration 
 
@@ -77,3 +104,12 @@ const convert = createConverter({
 })
 const numb = convert("True") //result: "Custom Boolean"
 ```
+
+## Guess Array Element
+Useful when converting data from url encoded, where single value could be a single array. 
+
+```typescript
+const convert = createConverter({ guessArrayElement: true })
+const b = convert("1", [Number]) //ok
+```
+
