@@ -100,7 +100,7 @@ describe("Model Converter", () => {
         expect(result).toEqual({ id: 200, name: "Mimi" })
     })
 
-    it.only("Should not convert if expected type is Object", () => {
+    it("Should not convert if expected type is Object", () => {
         const result = convert({
             host: '127.0.0.1:61945',
             'accept-encoding': 'gzip, deflate',

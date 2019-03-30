@@ -103,11 +103,17 @@ describe("Array Converter", () => {
             id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
             tags: [{ id: "500", name: "Rabies" }, { id: "Hello", name: "Rabies Two" }]
         }]
-        try{
+        try {
             convert(value, [AnimalModel])
         }
-        catch(e){
-            expect(e.issues).toEqual({path: ["1", "tags", "1", "id"], messages: ["Unable to convert \"Hello\" into Number"]})
+        catch (e) {
+            expect(e.issues).toEqual({ path: ["1", "tags", "1", "id"], messages: ["Unable to convert \"Hello\" into Number"] })
         }
+    })
+
+    it("Should able to guess non array for single element as element if defined", () => {
+        const convert = createConverter({ guessArrayElement: true })
+        const b = convert("1", [Number])
+        expect(b).toEqual([1])
     })
 })
