@@ -21,7 +21,7 @@ class ConversionError extends Error {
 // --------------------------------------------------------------------- //
 
 function createConversionError(value: any, typ: Function | Function[], path: string[]) {
-    const typeName = Array.isArray(typ) ? `Array<${typ[0].name}>`  : typ.name
+    const typeName = Array.isArray(typ) ? `Array<${typ[0].name}>` : typ.name
     return new ConversionError({ path: path, messages: [`Unable to convert "${value}" into ${typeName}`] })
 }
 
@@ -92,9 +92,10 @@ namespace DefaultConverters {
         if (!isConvertibleToObject(value)) throw createConversionError(value, TheType, path)
         const instance = createInstance(value, TheType)
         //traverse through the object properties and convert to appropriate property's type
+        //sanitize excess property to prevent object having properties that doesn't match with declaration
         for (let x of reflection.properties) {
             const val = convert((value as any)[x.name], path.concat(x.name), x.type, converters)
-            //sanitize excess property to prevent object having properties that doesn't match with declaration
+            //remove undefined properties
             if (val === undefined) delete instance[x.name]
             else instance[x.name] = val
         }
@@ -114,6 +115,7 @@ namespace DefaultConverters {
 function convert(value: any, path: string[], expectedType: Function | Function[] | undefined, converters: Map<Function, Converter>) {
     if (value === null || value === undefined) return undefined
     if (!expectedType) return value
+    if (expectedType === Object) return value;
     if (value.constructor === expectedType) return value;
     //check if the parameter contains @array()
     if (Array.isArray(expectedType))
@@ -122,7 +124,7 @@ function convert(value: any, path: string[], expectedType: Function | Function[]
     else if (converters.has(expectedType))
         return converters.get(expectedType)!(value, path, expectedType, converters)
     //if type of model and has no  converter, use DefaultObject converter
-    else 
+    else
         return DefaultConverters.modelConverter(value, path, expectedType as Class, converters)
 }
 

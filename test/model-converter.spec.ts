@@ -100,4 +100,22 @@ describe("Model Converter", () => {
         expect(result).toEqual({ id: 200, name: "Mimi" })
     })
 
+    it.only("Should not convert if expected type is Object", () => {
+        const result = convert({
+            host: '127.0.0.1:61945',
+            'accept-encoding': 'gzip, deflate',
+            'user-agent': 'node-superagent/3.8.3',
+            'content-type': 'application/json',
+            'content-length': '67',
+            connection: 'close'
+        }, Object)
+        expect(result).toEqual({
+            host: '127.0.0.1:61945',
+            'accept-encoding': 'gzip, deflate',
+            'user-agent': 'node-superagent/3.8.3',
+            'content-type': 'application/json',
+            'content-length': '67',
+            connection: 'close'
+        })
+    })
 })

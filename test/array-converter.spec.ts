@@ -76,4 +76,38 @@ describe("Array Converter", () => {
         expect(() => convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, [AnimalClass]))
             .toThrow(ConversionError)
     })
+
+    it("Should throw error if provided wrong vlaue in nested array", () => {
+        @reflect.parameterProperties()
+        class TagModel {
+            constructor(
+                public id: number,
+                public name: string,
+            ) { }
+        }
+        @reflect.parameterProperties()
+        class AnimalModel {
+            constructor(
+                public id: number,
+                public name: string,
+                public deceased: boolean,
+                public birthday: Date,
+                @reflect.array(TagModel)
+                public tags: TagModel[]
+            ) { }
+        }
+        const value = [{
+            id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
+            tags: [{ id: "500", name: "Rabies" }, { id: "600", name: "Rabies Two" }]
+        }, {
+            id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
+            tags: [{ id: "500", name: "Rabies" }, { id: "Hello", name: "Rabies Two" }]
+        }]
+        try{
+            convert(value, [AnimalModel])
+        }
+        catch(e){
+            expect(e.issues).toEqual({path: ["1", "tags", "1", "id"], messages: ["Unable to convert \"Hello\" into Number"]})
+        }
+    })
 })
