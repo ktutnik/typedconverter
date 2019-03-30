@@ -116,4 +116,10 @@ describe("Array Converter", () => {
         const b = convert("1", [Number])
         expect(b).toEqual([1])
     })
+
+    it("Should not error when provided single array on guess element mode", () => {
+        const convert = createConverter({ guessArrayElement: true })
+        const b = convert(["1"], [Number])
+        expect(b).toEqual([1])
+    })
 })
