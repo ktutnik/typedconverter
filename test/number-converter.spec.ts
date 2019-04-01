@@ -29,6 +29,6 @@ describe("Number Converter", () => {
     })
     it("Should not convert string", () => {
         expect(() => convert("hello"))
-            .toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "hello" into Number`] }))
+            .toThrow(new ConversionError([{ path: ["id"], messages: [`Unable to convert "hello" into Number`] }]))
     })
 })

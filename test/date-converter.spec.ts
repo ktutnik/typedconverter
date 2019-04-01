@@ -19,6 +19,6 @@ describe("Date Converter", () => {
         expect(result).toBeUndefined()
     })
     it("Should throw error when provided non convertible string", () => {
-        expect(() => convert("Hello")).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "Hello" into Date`] }))
+        expect(() => convert("Hello")).toThrow(new ConversionError([{ path: ["id"], messages: [`Unable to convert "Hello" into Date`] }]))
     })
 })

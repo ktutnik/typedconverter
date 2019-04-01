@@ -14,10 +14,10 @@ describe("Durability test", () => {
             const result = convert(Object.create(null), Number)
         }
         catch (e) {
-            expect(e.issues).toEqual({
+            expect(e.issues).toEqual([{
                 path: [],
                 messages: ['Unable to convert "[object Object]" into Number'],
-            })
+            }])
         }
     })
 

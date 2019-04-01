@@ -14,10 +14,14 @@ describe("Model Converter", () => {
                 public birthday: Date
             ) { }
         }
-
-        const result = convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, AnimalClass)
-        expect(result).toBeInstanceOf(AnimalClass)
-        expect(result).toEqual({ birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi" })
+        
+        try{
+            const result = convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, AnimalClass)
+            expect(result).toBeInstanceOf(AnimalClass)
+            expect(result).toEqual({ birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi" })
+        } catch(e){
+            console.log(e)
+        }
     })
 
     it("Should not convert excess properties", () => {
@@ -64,7 +68,7 @@ describe("Model Converter", () => {
 
         expect(() => {
             convert({ id: "200", name: "Mimi", deceased: "Hello", birthday: "2018-1-1" }, AnimalClass)
-        }).toThrow(new ConversionError({ path: ["id", "deceased"], messages: [`Unable to convert "Hello" into Boolean`] }))
+        }).toThrow(new ConversionError([{ path: ["id", "deceased"], messages: [`Unable to convert "Hello" into Boolean`] }]))
     })
 
     it("Should throw if provided non convertible value", () => {
@@ -80,7 +84,7 @@ describe("Model Converter", () => {
 
         expect(() => {
             convert("Hello", AnimalClass)
-        }).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "Hello" into AnimalClass`] }))
+        }).toThrow(new ConversionError([{ path: ["id"], messages: [`Unable to convert "Hello" into AnimalClass`] }]))
     })
 
     it("Should not populate optional properties with undefined", () => {

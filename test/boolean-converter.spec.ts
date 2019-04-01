@@ -19,9 +19,9 @@ describe("Boolean Converter", () => {
         expect(result).toBeUndefined()
     })
     it("Should throw error when provided non convertible string", () => {
-        expect(() => convert("Hello")).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "Hello" into Boolean`] }))
+        expect(() => convert("Hello")).toThrow(new ConversionError([{ path: ["id"], messages: [`Unable to convert "Hello" into Boolean`] }]))
     })
     it("Should throw error when provided non convertible number", () => {
-        expect(() => convert(200)).toThrow(new ConversionError({ path: ["id"], messages: [`Unable to convert "200" into Boolean`] }))
+        expect(() => convert(200)).toThrow(new ConversionError([{ path: ["id"], messages: [`Unable to convert "200" into Boolean`] }]))
     })
 })

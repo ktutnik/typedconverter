@@ -77,7 +77,7 @@ describe("Array Converter", () => {
             .toThrow(ConversionError)
     })
 
-    it("Should throw error if provided wrong vlaue in nested array", () => {
+    it.only("Should throw error if provided wrong vlaue in nested array", () => {
         @reflect.parameterProperties()
         class TagModel {
             constructor(
@@ -107,10 +107,10 @@ describe("Array Converter", () => {
             convert(value, [AnimalModel])
         }
         catch (e) {
-            expect(e.issues).toEqual({ path: ["1", "tags", "1", "id"], messages: ["Unable to convert \"Hello\" into Number"] })
+            expect(e.issues).toEqual([{ path: ["1", "tags", "1", "id"], messages: ["Unable to convert \"Hello\" into Number"] }])
         }
     })
-
+ 
     it("Should able to guess non array for single element as element if defined", () => {
         const convert = createConverter({ guessArrayElement: true })
         const b = convert("1", [Number])
