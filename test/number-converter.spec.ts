@@ -28,7 +28,10 @@ describe("Number Converter", () => {
         expect(result).toBeUndefined()
     })
     it("Should not convert string", () => {
-        expect(() => convert("hello"))
-            .toThrow(new ConversionError([{ path: ["id"], messages: [`Unable to convert "hello" into Number`] }]))
+        try{
+            convert("Hello")
+        }catch(e){
+            expect(e.issues).toEqual([{ path: [], messages: [`Unable to convert "Hello" into Number`] }])
+        }
     })
 })
