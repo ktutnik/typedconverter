@@ -10,21 +10,30 @@
   ],
   "scripts": {
     "test": "jest",
-    "prepublish": "tsc -p tsconfig.build.json"
+    "prepublish": "tsc -p tsconfig.build.json",
+    "gen": "ts-node src/generator.ts",
+    "clean": "rm -rf src/*.js && rm -rf test/*.js"
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "tinspector": "^2.2.0",
-    "tslib": "^1.9.3"
+    "tinspector": "^2.2.1",
+    "tslib": "^1.9.3",
+    "validator":"^10.11.0",
+    "@types/validator":"^10.11.0"
   },
   "devDependencies": {
     "@types/jest": "^24.0.11",
     "coveralls": "^3.0.3",
     "jest": "^24.5.0",
     "ts-jest": "^24.0.0",
-    "typescript": "^3.3.4000"
+    "typescript": "^3.3.4000",
+    "ejs":"^2.6.1",
+    "@types/ejs":"^2.6.3",
+    "joi": "^14.3.1",
+    "@types/joi": "^14.3.2"
   },
+
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"
   },

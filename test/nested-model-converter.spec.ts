@@ -85,7 +85,7 @@ describe("Nested Model", () => {
             deceased: "ON",
             birthday: "2018-1-1",
             owner: { id: "400", name: "John Doe", join: "Hello" }
-        }, AnimalClass)).toThrow(new ConversionError({ path: ["id", "owner", "join"], messages: [`Unable to convert "Hello" into Date`] }))
+        }, AnimalClass)).toThrow(new ConversionError([{ path: ["id", "owner", "join"], messages: [`Unable to convert "Hello" into Date`] }]))
     })
 
     it("Should throw if non convertible model provided", () => {
@@ -95,6 +95,6 @@ describe("Nested Model", () => {
             deceased: "ON",
             birthday: "2018-1-1",
             owner: "Hello"
-        }, AnimalClass)).toThrow(new ConversionError({ path: ["id", "owner"], messages: [`Unable to convert "Hello" into ClientClass`] }))
+        }, AnimalClass)).toThrow(new ConversionError([{ path: ["id", "owner"], messages: [`Unable to convert "Hello" into ClientClass`] }]))
     })
 })
