@@ -77,7 +77,7 @@ describe("Array Converter", () => {
             .toThrow(ConversionError)
     })
 
-    it.only("Should throw error if provided wrong vlaue in nested array", () => {
+    it("Should throw error if provided wrong vlaue in nested array", () => {
         @reflect.parameterProperties()
         class TagModel {
             constructor(

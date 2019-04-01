@@ -5,7 +5,7 @@ import reflect, { decorate } from "tinspector"
 // --------------------------------------------------------------------- //
 
 type Class = new (...args: any[]) => any
-interface ConverterMap { key: Function, converter: Converter }
+type ConverterMap = [Function | string, Converter]
 interface ConversionIssue { path: string[], messages: string[] }
 type ConversionResult = [any, ConversionIssue[] | undefined]
 type ConverterStore = Map<Function | string, Converter>
@@ -146,10 +146,6 @@ namespace DefaultConverters {
     }
 }
 
-function validate(validator: (val: any, type: Function) => Promise<undefined | string>) {
-    return decorate({ type: "tc:validate", validator })
-}
-
 // --------------------------------------------------------------------- //
 // --------------------------- MAIN CONVERTER -------------------------- //
 // --------------------------------------------------------------------- //
@@ -173,19 +169,24 @@ function convert(value: any, info: ObjectInfo<Function | Function[] | undefined>
 
 function converter(option: { guessArrayElement?: boolean, type?: Function | Function[], converters?: ConverterMap[] } = {}) {
     return (value: any, type?: Function | Function[], path: string[] = []) => {
-        const mergedConverters: ConverterStore = new Map()
-        mergedConverters.set(Number, DefaultConverters.numberConverter)
-        mergedConverters.set(Boolean, DefaultConverters.booleanConverter)
-        mergedConverters.set(Date, DefaultConverters.dateConverter);
         const arrayConverter = <Converter>(option.guessArrayElement ? DefaultConverters.friendlyArrayConverter : DefaultConverters.strictArrayConverter)
-        mergedConverters.set("Array", arrayConverter);
-        mergedConverters.set("Model", DefaultConverters.modelConverter);
-        (option.converters || []).forEach(x => mergedConverters.set(x.key, x.converter))
+        const mergedConverters: ConverterStore = new Map<Function | string, Converter>([
+            [Number, DefaultConverters.numberConverter],
+            [Boolean, DefaultConverters.booleanConverter],
+            [Date, DefaultConverters.dateConverter],
+            ["Array", arrayConverter],
+            ["Model", DefaultConverters.modelConverter],
+            ...option.converters || []
+        ]);
         const [val, err] = convert(value, { path, expectedType: type || option.type, converters: mergedConverters })
         if (err) throw new ConversionError(err)
         else return val
     }
 }
 
-export { Converter, DefaultConverters, ConverterMap, ConversionError, validate }
+export {
+    Converter, DefaultConverters, ConverterMap, ConversionResult,
+    ConversionError, ObjectInfo, ConversionIssue, ConverterStore
+}
+
 export default converter
