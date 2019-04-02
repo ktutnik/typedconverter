@@ -5,7 +5,7 @@ import reflect, { decorate } from "tinspector"
 // --------------------------------------------------------------------- //
 
 type Class = new (...args: any[]) => any
-type ConverterMap = [Function | string, Converter]
+type ConverterMap = { type: Function | string, converter: Converter }
 interface ConversionIssue { path: string[], messages: string[] }
 type ConversionResult = [any, ConversionIssue[] | undefined]
 type ConverterStore = Map<Function | string, Converter>
@@ -170,13 +170,14 @@ function convert(value: any, info: ObjectInfo<Function | Function[] | undefined>
 function converter(option: { guessArrayElement?: boolean, type?: Function | Function[], converters?: ConverterMap[] } = {}) {
     return (value: any, type?: Function | Function[], path: string[] = []) => {
         const arrayConverter = <Converter>(option.guessArrayElement ? DefaultConverters.friendlyArrayConverter : DefaultConverters.strictArrayConverter)
+        const customConverters = (option.converters || []).map(x => (<[Function|string, Converter]>[x.type, x.converter]))
         const mergedConverters: ConverterStore = new Map<Function | string, Converter>([
             [Number, DefaultConverters.numberConverter],
             [Boolean, DefaultConverters.booleanConverter],
             [Date, DefaultConverters.dateConverter],
             ["Array", arrayConverter],
             ["Model", DefaultConverters.modelConverter],
-            ...option.converters || []
+            ...customConverters
         ]);
         const [val, err] = convert(value, { path, expectedType: type || option.type, converters: mergedConverters })
         if (err) throw new ConversionError(err)
