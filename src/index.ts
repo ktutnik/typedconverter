@@ -1,4 +1,4 @@
-import reflect, { decorate } from "tinspector"
+import reflect from "tinspector"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -6,22 +6,82 @@ import reflect, { decorate } from "tinspector"
 
 type Class = new (...args: any[]) => any
 type ConverterMap = [Function | string, Converter]
-interface ConversionIssue { path: string[], messages: string[] }
+type Converter = (value: any, info: ObjectInfo<Function | Function[]>) => Promise<ConversionResult>
+type Visitor = (value: any, invocation: Invocation) => Promise<ConversionResult>
 type ConversionResult = [any, ConversionIssue[] | undefined]
 type ConverterStore = Map<Function | string, Converter>
+interface FactoryOption { guessArrayElement?: boolean, type?: Function | Function[], converters?: ConverterMap[], visitors?: Visitor[] }
+interface ConverterOption { type?: Function | Function[], path?: string[], decorators?: any[] }
+
 interface ObjectInfo<T> {
+    type: T,
     path: string[],
-    expectedType: T,
-    converters: ConverterStore
+    converters: ConverterStore,
+    visitors: Visitor[],
+    decorators: any[],
 }
 
-type Converter = (value: any, info: ObjectInfo<Function | Function[]>) => ConversionResult
+class ConversionIssue {
+    messages: string[]
+    constructor(public path:string[], messages: string | string[]){
+        this.messages = Array.isArray(messages) ? messages : [messages]
+    }
+}
 
 class ConversionError extends Error {
     constructor(public issues: ConversionIssue[], public status = 400) {
-        super("Conversion error")
+        super(issues.map(x => `${x.path.join(".")} ${x.messages.join(", ")}`).join("\n"))
         Object.setPrototypeOf(this, ConversionError.prototype)
     }
+}
+
+
+// --------------------------------------------------------------------- //
+// ----------------------------- INVOCATION ---------------------------- //
+// --------------------------------------------------------------------- //
+
+abstract class Invocation implements ObjectInfo<Function | Function[]> {
+    type: Function | Function[]
+    path: string[]
+    converters: Map<string | Function, Converter>
+    visitors: Visitor[]
+    decorators: any[]
+    constructor(info: ObjectInfo<Function | Function[]>) {
+        this.type = info.type
+        this.path = info.path
+        this.converters = info.converters
+        this.visitors = info.visitors
+        this.decorators = info.decorators
+    }
+    abstract proceed(): Promise<ConversionResult>
+}
+
+class VisitorInvocation extends Invocation {
+    private next?: Invocation
+    constructor(private visitor: Visitor, private value: any, info: ObjectInfo<Function | Function[]>) {
+        super(info)
+    }
+    chain(next: Invocation): Invocation {
+        this.next = next
+        return this
+    }
+    proceed(): Promise<ConversionResult> {
+        return this.visitor(this.value, this.next!)
+    }
+}
+
+class MainInvocation extends Invocation {
+    constructor(private value: any, info: ObjectInfo<Function | Function[]>) {
+        super(info)
+    }
+    proceed(): Promise<ConversionResult> {
+        return visitor(this.value, this)
+    }
+}
+
+function pipe(value: any, info: ObjectInfo<Function | Function[]>) {
+    const invocations = info.visitors.map(x => new VisitorInvocation(x, value, { ...info }))
+    return invocations.reduce((a, b) => b.chain(a), <Invocation>new MainInvocation(value, { ...info })).proceed()
 }
 
 // --------------------------------------------------------------------- //
@@ -56,12 +116,35 @@ function createInstance<T extends Class>(value: any, TheType: T) {
     }
 }
 
+function mergeIssue(prevResult?: ConversionIssue[], curResult?: ConversionIssue[] | ConversionIssue) {
+    const temp = (prevResult || []).concat(curResult || [])
+    const result: ConversionIssue[] = []
+    const map: { [key: string]: ConversionIssue } = {}
+    for (const item of temp) {
+        const savedItem = map[item.path.join(".")]
+        if (savedItem) {
+            savedItem.messages.push(...item.messages)
+        }
+        else {
+            map[item.path.join(".")] = item
+            result.push(item)
+        }
+    }
+    return result;
+}
+
+function mergeResult([prevResult, prevErr]: ConversionResult, [curResult, curErr]: ConversionResult): ConversionResult {
+    const issues = mergeIssue(prevErr, curErr)
+    if (issues.length === 0) return [curResult || prevResult, undefined]
+    else return [undefined, issues]
+}
+
 // --------------------------------------------------------------------- //
 // ------------------------- DEFAULT CONVERTERS ------------------------ //
 // --------------------------------------------------------------------- //
 
 namespace DefaultConverters {
-    export function booleanConverter(rawValue: {}, info: ObjectInfo<Function | Function[]>): ConversionResult {
+    export async function booleanConverter(rawValue: {}, info: ObjectInfo<Function | Function[]>): Promise<ConversionResult> {
         const value: string = safeToString(rawValue)
         const list: { [key: string]: boolean | undefined } = {
             on: true, true: true, "1": true, yes: true,
@@ -72,42 +155,42 @@ namespace DefaultConverters {
         return [result, undefined]
     }
 
-    export function numberConverter(rawValue: {}, info: ObjectInfo<Function | Function[]>): ConversionResult {
+    export async function numberConverter(rawValue: {}, info: ObjectInfo<Function | Function[]>): Promise<ConversionResult> {
         const value = safeToString(rawValue)
         const result = Number(value)
         if (isNaN(result) || value === "") return [undefined, createConversionError(value, Number, info.path)]
         return [result, undefined]
     }
 
-    export function dateConverter(rawValue: {}, info: ObjectInfo<Function | Function[]>): ConversionResult {
+    export async function dateConverter(rawValue: {}, info: ObjectInfo<Function | Function[]>): Promise<ConversionResult> {
         const value = safeToString(rawValue)
         const result = new Date(value)
         if (isNaN(result.getTime()) || value === "") return [undefined, createConversionError(value, Date, info.path)]
         return [result, undefined]
     }
 
-    export function modelConverter(value: {}, info: ObjectInfo<Function | Function[]>): ConversionResult {
-        const { converters } = info
+    export async function classConverter(value: {}, { type, path, ...restInfo }: ObjectInfo<Function | Function[]>): Promise<ConversionResult> {
         //--- helper functions
         const isConvertibleToObject = (value: any) =>
             typeof value !== "boolean"
             && typeof value !== "number"
             && typeof value !== "string"
         //---
-        const TheType = info.expectedType as Class
+        const TheType = type as Class
         //get reflection metadata of the class
         const reflection = reflect(TheType)
         //check if the value is possible to convert to model
-        if (!isConvertibleToObject(value)) return [undefined, createConversionError(value, TheType, info.path)]
+        if (!isConvertibleToObject(value)) return [undefined, createConversionError(value, TheType, path)]
         const instance = createInstance(value, TheType)
         //traverse through the object properties and convert to appropriate property's type
         //sanitize excess property to prevent object having properties that doesn't match with declaration
         const issues: ConversionIssue[] = []
         for (let x of reflection.properties) {
-            const [val, err] = convert((value as any)[x.name], {
-                path: info.path.concat(x.name),
-                expectedType: x.type,
-                converters
+            const [val, err] = await convert((value as any)[x.name], {
+                path: path.concat(x.name),
+                type: x.type,
+                ...restInfo,
+                decorators: x.decorators
             })
             if (err) issues.push(...err)
             //remove undefined properties
@@ -118,12 +201,12 @@ namespace DefaultConverters {
         else return [instance, undefined]
     }
 
-    function arrayConverter(value: {}[], info: ObjectInfo<Function[]>): ConversionResult {
-        const result = value.map((x, i) => convert(x, {
-            path: info.path.concat(i.toString()),
-            expectedType: info.expectedType && info.expectedType[0],
-            converters: info.converters
-        }))
+    async function arrayConverter(value: {}[], { type, path, ...restInfo }: ObjectInfo<Function[]>): Promise<ConversionResult> {
+        const result = await Promise.all(value.map((x, i) => convert(x, {
+            path: path.concat(i.toString()),
+            type: type[0],
+            ...restInfo
+        })))
         if (result.some(x => !!x[1])) {
             const issue: ConversionIssue[] = []
             for (const [, err] of result) {
@@ -135,12 +218,12 @@ namespace DefaultConverters {
             return [result.map(x => x[0]), undefined]
     }
 
-    export function strictArrayConverter(value: {}, info: ObjectInfo<Function[]>): ConversionResult {
-        if (!Array.isArray(value)) return [undefined, createConversionError(value, info.expectedType, info.path)]
+    export async function strictArrayConverter(value: {}, info: ObjectInfo<Function[]>): Promise<ConversionResult> {
+        if (!Array.isArray(value)) return [undefined, createConversionError(value, info.type, info.path)]
         return arrayConverter(value, info)
     }
 
-    export function friendlyArrayConverter(value: {}, info: ObjectInfo<Function[]>): ConversionResult {
+    export async function friendlyArrayConverter(value: {}, info: ObjectInfo<Function[]>): Promise<ConversionResult> {
         const cleanValue = Array.isArray(value) ? value : [value]
         return arrayConverter(cleanValue, info)
     }
@@ -150,35 +233,46 @@ namespace DefaultConverters {
 // --------------------------- MAIN CONVERTER -------------------------- //
 // --------------------------------------------------------------------- //
 
-function convert(value: any, info: ObjectInfo<Function | Function[] | undefined>): ConversionResult {
-    const { expectedType, converters, path } = info
-    if (value === null || value === undefined) return [undefined, undefined]
-    if (!expectedType) return [value, undefined]
-    if (expectedType === Object) return [value, undefined]
-    if (value.constructor === expectedType) return [value, undefined]
+async function visitor(value: any, { type, converters, ...restInfo }: ObjectInfo<Function | Function[]>): Promise<ConversionResult> {
+    if (type === Object) return [value, undefined]
+    if (value.constructor === type) return [value, undefined]
     //check if the parameter contains @array()
-    if (Array.isArray(expectedType))
-        return converters.get("Array")!(value, { expectedType, converters, path })
+    if (Array.isArray(type))
+        return converters.get("Array")!(value, { type, converters, ...restInfo })
     //check if parameter is native value that has default converter (Number, Date, Boolean) or if user provided converter
-    else if (converters.has(expectedType))
-        return converters.get(expectedType)!(value, { expectedType, converters, path })
+    else if (converters.has(type))
+        return converters.get(type)!(value, { type, converters, ...restInfo })
     //if type of model and has no  converter, use DefaultObject converter
     else
-        return converters.get("Model")!(value, { expectedType, converters, path })
+        return converters.get("Class")!(value, { type, converters, ...restInfo })
 }
 
-function converter(option: { guessArrayElement?: boolean, type?: Function | Function[], converters?: ConverterMap[] } = {}) {
-    return (value: any, type?: Function | Function[], path: string[] = []) => {
-        const arrayConverter = <Converter>(option.guessArrayElement ? DefaultConverters.friendlyArrayConverter : DefaultConverters.strictArrayConverter)
+async function convert(value: any, { type, ...restInfo }: ObjectInfo<Function | Function[] | undefined>): Promise<ConversionResult> {
+    if (value === null || value === undefined) return [undefined, undefined]
+    if (!type) return [value, undefined]
+    return pipe(value, { type, ...restInfo })
+}
+
+function converter(factoryOption: FactoryOption = {}) {
+    return async (value: any, option?: Function | Function[] | ConverterOption) => {
+        const { friendlyArrayConverter: friendly, strictArrayConverter: strict } = DefaultConverters
         const mergedConverters: ConverterStore = new Map<Function | string, Converter>([
             [Number, DefaultConverters.numberConverter],
             [Boolean, DefaultConverters.booleanConverter],
             [Date, DefaultConverters.dateConverter],
-            ["Array", arrayConverter],
-            ["Model", DefaultConverters.modelConverter],
-            ...option.converters || []
+            ["Array", <Converter>(factoryOption.guessArrayElement ? friendly : strict)],
+            ["Class", DefaultConverters.classConverter],
+            ...factoryOption.converters || []
         ]);
-        const [val, err] = convert(value, { path, expectedType: type || option.type, converters: mergedConverters })
+        const expectedType = Array.isArray(option) || typeof option === "function" ? option : option && option.type
+        const path = typeof option === "object" && !Array.isArray(option) && option.path || []
+        const decorators = typeof option === "object" && !Array.isArray(option) && option.decorators || []
+        const [val, err] = await convert(value, {
+            path, type: expectedType || factoryOption.type,
+            converters: mergedConverters,
+            visitors: factoryOption.visitors || [],
+            decorators
+        })
         if (err) throw new ConversionError(err)
         else return val
     }
@@ -186,7 +280,8 @@ function converter(option: { guessArrayElement?: boolean, type?: Function | Func
 
 export {
     Converter, DefaultConverters, ConverterMap, ConversionResult,
-    ConversionError, ObjectInfo, ConversionIssue, ConverterStore
+    ConversionError, ObjectInfo, ConversionIssue, ConverterStore, Visitor,
+    FactoryOption, ConverterOption, Invocation, mergeResult, mergeIssue
 }
 
 export default converter

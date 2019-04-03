@@ -5,12 +5,12 @@ import reflect from "tinspector"
 const convert = createConverter()
 
 describe("Array Converter", () => {
-    it("Should convert array of number", () => {
-        const result = convert(["123", "123", "123"], [Number])
+    it("Should convert array of number", async () => {
+        const result = await convert(["123", "123", "123"], [Number])
         expect(result).toEqual([123, 123, 123])
     })
 
-    it("Should convert array of model", () => {
+    it("Should convert array of model", async () => {
         @reflect.parameterProperties()
         class AnimalClass {
             constructor(
@@ -20,7 +20,7 @@ describe("Array Converter", () => {
                 public birthday: Date
             ) { }
         }
-        const result = convert([
+        const result = await convert([
             { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" },
             { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" },
             { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }
@@ -32,7 +32,7 @@ describe("Array Converter", () => {
         ])
     })
 
-    it("Should convert nested array inside model", () => {
+    it("Should convert nested array inside model", async () => {
         @reflect.parameterProperties()
         class TagModel {
             constructor(
@@ -51,7 +51,7 @@ describe("Array Converter", () => {
                 public tags: TagModel[]
             ) { }
         }
-        const result = convert([
+        const result = await convert([
             { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tags: [{ id: "300", name: "Tug" }] },
             { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tags: [{ id: "300", name: "Tug" }] },
             { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tags: [{ id: "300", name: "Tug" }] }
@@ -63,7 +63,7 @@ describe("Array Converter", () => {
         ])
     })
 
-    it("Should throw error if provided expectedType of type of array", () => {
+    it("Should throw error if provided expectedType of type of array", async () => {
         @reflect.parameterProperties()
         class AnimalClass {
             constructor(
@@ -73,11 +73,21 @@ describe("Array Converter", () => {
                 public birthday: Date
             ) { }
         }
-        expect(() => convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, [AnimalClass]))
-            .toThrow(ConversionError)
+        try {
+            await convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, [AnimalClass])
+        } catch (e) {
+            expect(e.issues).toEqual([
+                {
+                    messages: [
+                        "Unable to convert \"[object Object]\" into Array<AnimalClass>",
+                    ],
+                    path: [],
+                }
+            ])
+        }
     })
 
-    it("Should throw error if provided wrong vlaue in nested array", () => {
+    it("Should throw error if provided wrong vlaue in nested array", async () => {
         @reflect.parameterProperties()
         class TagModel {
             constructor(
@@ -104,22 +114,22 @@ describe("Array Converter", () => {
             tags: [{ id: "500", name: "Rabies" }, { id: "Hello", name: "Rabies Two" }]
         }]
         try {
-            convert(value, [AnimalModel])
+            await convert(value, [AnimalModel])
         }
         catch (e) {
             expect(e.issues).toEqual([{ path: ["1", "tags", "1", "id"], messages: ["Unable to convert \"Hello\" into Number"] }])
         }
     })
- 
-    it("Should able to guess non array for single element as element if defined", () => {
+
+    it("Should able to guess non array for single element as element if defined", async () => {
         const convert = createConverter({ guessArrayElement: true })
-        const b = convert("1", [Number])
+        const b = await convert("1", [Number])
         expect(b).toEqual([1])
     })
 
-    it("Should not error when provided single array on guess element mode", () => {
+    it("Should not error when provided single array on guess element mode", async () => {
         const convert = createConverter({ guessArrayElement: true })
-        const b = convert(["1"], [Number])
+        const b = await convert(["1"], [Number])
         expect(b).toEqual([1])
     })
 })

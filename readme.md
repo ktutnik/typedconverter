@@ -11,9 +11,9 @@ Convert object into classes match with TypeScript type annotation
 import createConverter from "typedconverter";
 
 const convert = createConverter()
-const numb = convert("12345", Number) //return number 12345
-const numb = convert("YES", Boolean) //return true
-const numb = convert("2019-1-1", Date) //return date 1/1/2019
+const numb = await convert("12345", Number) //return number 12345
+const numb = await convert("YES", Boolean) //return true
+const numb = await convert("2019-1-1", Date) //return date 1/1/2019
 ```
 
 ## Specify type on configuration 
@@ -23,9 +23,9 @@ Expected type can be specified in the configuration, than you can omit expected 
 import createConverter from "typedconverter";
 
 const convert = createConverter({type: Number})
-const numb = convert("12345")
-const numb1 = convert("-12345")
-const numb2 = convert("12345.123")
+const numb = await convert("12345")
+const numb1 = await convert("-12345")
+const numb2 = await convert("12345.123")
 ```
 
 ## Convert custom class 
@@ -47,7 +47,7 @@ class AnimalClass {
     ) { }
 }
 //return instance of AnimalClass with appropriate properties type
-const data = convert({ 
+const data = await convert({ 
     id: "200", 
     name: "Mimi", 
     deceased: "ON", 
@@ -62,7 +62,7 @@ Convert into array by providing array of type in the expected type.
 import createConverter from "typedconverter";
 
 const convert = createConverter()
-const numb = convert(["1", "2", "-3"], [Number])
+const numb = await convert(["1", "2", "-3"], [Number])
 ```
 
 ## Convert Child Array
@@ -89,7 +89,15 @@ class Animal {
 
 const convert = createConverter()
 //tags is instance of Tag class
-const numb = convert({name: "Mimi", tags: [{name: "Susi"}, {name: "Lorem"}]}, Animal)
+const numb = await convert({name: "Mimi", tags: [{name: "Susi"}, {name: "Lorem"}]}, Animal)
+```
+
+## Guess Array Element
+Useful when converting data from url encoded, where single value could be a single array. 
+
+```typescript
+const convert = createConverter({ guessArrayElement: true })
+const b = await convert("1", [Number]) //ok
 ```
 
 ## Custom Converter
@@ -100,16 +108,11 @@ import createConverter from "typedconverter";
 
 const convert = createConverter({ 
     type: Boolean, 
-    converters: [{ key: Boolean, converter: x => "Custom Boolean" }] 
+    converters: [{ type: Boolean, converter: async x => "Custom Boolean" }] 
 })
-const numb = convert("True") //result: "Custom Boolean"
+const numb = await convert("True") //result: "Custom Boolean"
 ```
 
-## Guess Array Element
-Useful when converting data from url encoded, where single value could be a single array. 
-
-```typescript
-const convert = createConverter({ guessArrayElement: true })
-const b = convert("1", [Number]) //ok
-```
+## Visitors
+Visitors executed after conversion process traverse through properties / array element.
 

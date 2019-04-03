@@ -24,8 +24,8 @@ describe("Nested Model", () => {
         ) { }
     }
 
-    it("Should convert nested model", () => {
-        const result: AnimalClass = convert({
+    it("Should convert nested model", async () => {
+        const result: AnimalClass = await convert({
             id: "200",
             name: "Mimi",
             deceased: "ON",
@@ -43,8 +43,8 @@ describe("Nested Model", () => {
         })
     })
 
-    it("Should sanitize excess data", () => {
-        const result: AnimalClass = convert({
+    it("Should sanitize excess data", async () => {
+        const result: AnimalClass = await convert({
             id: "200",
             name: "Mimi",
             deceased: "ON",
@@ -63,8 +63,8 @@ describe("Nested Model", () => {
         })
     })
 
-    it("Should allow undefined values", () => {
-        const result: AnimalClass = convert({
+    it("Should allow undefined values", async () => {
+        const result: AnimalClass = await convert({
             id: "200",
             name: "Mimi",
             owner: { id: "400", name: "John Doe" }
@@ -78,23 +78,33 @@ describe("Nested Model", () => {
         })
     })
 
-    it("Should throw if non convertible value provided", () => {
-        expect(() => convert({
-            id: "200",
-            name: "Mimi",
-            deceased: "ON",
-            birthday: "2018-1-1",
-            owner: { id: "400", name: "John Doe", join: "Hello" }
-        }, AnimalClass)).toThrow(new ConversionError([{ path: ["id", "owner", "join"], messages: [`Unable to convert "Hello" into Date`] }]))
+    it("Should throw if non convertible value provided", async () => {
+        try {
+            await convert({
+                id: "200",
+                name: "Mimi",
+                deceased: "ON",
+                birthday: "2018-1-1",
+                owner: { id: "400", name: "John Doe", join: "Hello" }
+            })
+        }
+        catch (e) {
+            expect(e.issues).toEqual([{ path: ["id", "owner", "join"], messages: [`Unable to convert "Hello" into Date`] }])
+        }
     })
 
-    it("Should throw if non convertible model provided", () => {
-        expect(() => convert({
-            id: "200",
-            name: "Mimi",
-            deceased: "ON",
-            birthday: "2018-1-1",
-            owner: "Hello"
-        }, AnimalClass)).toThrow(new ConversionError([{ path: ["id", "owner"], messages: [`Unable to convert "Hello" into ClientClass`] }]))
+    it("Should throw if non convertible model provided", async () => {
+        try {
+            await convert({
+                id: "200",
+                name: "Mimi",
+                deceased: "ON",
+                birthday: "2018-1-1",
+                owner: "Hello"
+            })
+        }
+        catch (e) {
+            expect(e.issues).toEqual([{ path: ["id", "owner"], messages: [`Unable to convert "Hello" into ClientClass`] }])
+        }
     })
 })
