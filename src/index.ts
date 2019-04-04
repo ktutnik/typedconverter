@@ -5,13 +5,13 @@ import reflect, { decorate } from "tinspector"
 // --------------------------------------------------------------------- //
 
 type Class = new (...args: any[]) => any
-type ConverterMap = [Function | string, Converter]
 type Converter = (value: any, info: ObjectInfo<Function | Function[]>) => Promise<ConversionResult>
 type Visitor = (value: any, invocation: ConverterInvocation) => Promise<ConversionResult>
 type ConverterStore = Map<Function | string, Converter>
 interface FactoryOption { guessArrayElement?: boolean, type?: Function | Function[], converters?: ConverterMap[], visitors?: Visitor[] }
 interface ConverterOption { type?: Function | Function[], path?: string[], decorators?: any[] }
 
+interface ConverterMap { type: Function, converter: Converter }
 interface ObjectInfo<T> {
     type: T,
     path: string[],
@@ -218,12 +218,12 @@ namespace DefaultConverters {
             type: type[0],
             ...restInfo
         })))
-            const returnedResult = new ConversionResult(result.map(x => x.value))
-            const issue: ConversionMessage[] = []
-            for (const item of result) {
-                if (item.messages.length > 0) returnedResult.messages = mergeIssue(returnedResult.messages, item.messages)
-            }
-            return returnedResult
+        const returnedResult = new ConversionResult(result.map(x => x.value))
+        const issue: ConversionMessage[] = []
+        for (const item of result) {
+            if (item.messages.length > 0) returnedResult.messages = mergeIssue(returnedResult.messages, item.messages)
+        }
+        return returnedResult
     }
 
     export async function strictArrayConverter(value: {}, info: ObjectInfo<Function[]>): Promise<ConversionResult> {
@@ -268,7 +268,7 @@ function converter(factoryOption: FactoryOption = {}) {
             [Date, DefaultConverters.dateConverter],
             ["Array", <Converter>(factoryOption.guessArrayElement ? friendly : strict)],
             ["Class", DefaultConverters.classConverter],
-            ...factoryOption.converters || []
+            ...(factoryOption.converters || []).map(x => (<[Function, Converter]>[x.type, x.converter]))
         ]);
         const expectedType = Array.isArray(option) || typeof option === "function" ? option : option && option.type
         const path = typeof option === "object" && !Array.isArray(option) && option.path || []

@@ -1,4 +1,5 @@
-import createConverter, { ConversionError } from "../src"
+import createConverter from "../src"
+
 const convert = createConverter({ type: Number })
 
 describe("Number Converter", () => {

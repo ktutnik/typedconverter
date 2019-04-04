@@ -108,11 +108,22 @@ import createConverter from "typedconverter";
 
 const convert = createConverter({ 
     type: Boolean, 
-    converters: [{ type: Boolean, converter: async x => "Custom Boolean" }] 
+    converters: [{ type: Boolean, converter: async x =>  new ConversionResult("Custom Boolean")  }] 
 })
 const numb = await convert("True") //result: "Custom Boolean"
 ```
 
 ## Visitors
-Visitors executed after conversion process traverse through properties / array element.
+Visitors executed after conversion process traverse through properties / array element. Invocation can be multiple and run in sequence the last sequence will execute the converter. Visitors work like [Plumier middleware](https://plumierjs.com/docs/middleware)
+
+Signature of Visitor is like below: 
+
+```typescript
+type Visitor = (value: any, invocation: ConverterInvocation) => Promise<ConversionResult>
+```
+
+Visitor is a function receive two parameters `value` and `invocation`. 
+* `value` is current value traversed 
+* `invocation` next invocation 
+
 

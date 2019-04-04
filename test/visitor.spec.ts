@@ -1,5 +1,6 @@
-import createConverter, { ConverterInvocation, ConversionResult, ConversionMessage } from "../src"
-import reflect, { decorateProperty } from 'tinspector';
+import reflect, { decorateProperty } from "tinspector"
+
+import createConverter, { ConversionMessage, ConversionResult, ConverterInvocation } from "../src"
 
 describe("Visitor", () => {
     async function myVisitor(value: any, info: ConverterInvocation): Promise<ConversionResult> {

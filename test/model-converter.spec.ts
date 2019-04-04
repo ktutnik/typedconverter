@@ -1,5 +1,6 @@
-import createConverter, { ConversionError } from "../src"
 import reflect from "tinspector"
+
+import createConverter from "../src"
 
 const convert = createConverter()
 
