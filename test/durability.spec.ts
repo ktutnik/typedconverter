@@ -1,4 +1,4 @@
-import createConverter, { ConversionError } from "../src"
+import createConverter, { ConversionError, ConverterInvocation, ConversionResult, ConversionMessage } from "../src"
 import reflect from 'tinspector';
 
 const convert = createConverter()
@@ -107,4 +107,5 @@ describe("Durability test", () => {
                 { "messages": ["Unable to convert \"DEF\" into Date"], "path": ["1", "birthday"] }])
         }
     })
+
 })

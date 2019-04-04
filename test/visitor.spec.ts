@@ -1,11 +1,12 @@
-import createConverter, { Invocation, ConversionResult, ConversionIssue, mergeResult, mergeIssue } from "../src"
+import createConverter, { ConverterInvocation, ConversionResult, ConversionMessage } from "../src"
 import reflect, { decorateProperty } from 'tinspector';
 
 describe("Visitor", () => {
-    async function myVisitor(value: any, info: Invocation): Promise<ConversionResult> {
-        const curErr = info.type === Number && value < 18 ? new ConversionIssue(info.path, "Must be older than 18") : undefined
-        const [prevResult, prevErr] = await info.proceed()
-        return [prevResult, mergeIssue(prevErr, curErr)]
+    async function myVisitor(value: any, info: ConverterInvocation): Promise<ConversionResult> {
+        const prevResult = await info.proceed()
+        if (info.type === Number && prevResult.value < 18)
+            return prevResult.merge(new ConversionMessage(info.path, "Must be older than 18"))
+        else return prevResult
     }
 
     const convert = createConverter({
@@ -64,10 +65,11 @@ describe("Visitor", () => {
 
 
 describe("Multiple Visitors", () => {
-    async function myVisitor(value: any, info: Invocation): Promise<ConversionResult> {
-        const issue: ConversionIssue = { path: info.path, messages: ["Must be older than 18"] }
-        const result = info.type === Number && value < 18 ? [issue] : undefined
-        return mergeResult(await info.proceed(), [undefined, result])
+    async function myVisitor(value: any, info: ConverterInvocation): Promise<ConversionResult> {
+        const prevResult = await info.proceed()
+        if (info.type === Number && prevResult.value < 18)
+            return prevResult.merge(new ConversionMessage(info.path, "Must be older than 18"))
+        else return prevResult
     }
 
     const convert = createConverter({
@@ -89,10 +91,11 @@ describe("Multiple Visitors", () => {
 })
 
 describe("Decorator distribution", () => {
-    async function myVisitor(value: any, info: Invocation): Promise<ConversionResult> {
-        const [result, err] = await info.proceed()
-        const curError = info.decorators.some(x => x.type === "deco") ? new ConversionIssue(info.path, "Has decorator") : undefined
-        return [result, mergeIssue(err, curError)]
+    async function myVisitor(value: any, info: ConverterInvocation): Promise<ConversionResult> {
+        const nextResult = await info.proceed()
+        if (info.decorators.some(x => x.type === "deco"))
+            return nextResult.merge(new ConversionMessage(info.path, "Has decorator"))
+        return nextResult
     }
     const convert = createConverter({
         visitors: [myVisitor]
@@ -148,5 +151,64 @@ describe("Decorator distribution", () => {
 
         await expect(convert([{ age: "12" }, { age: "40" }, { age: "12" }], [Tag]))
             .rejects.toThrow("0.age Has decorator\n1.age Has decorator\n2.age Has decorator")
+    })
+})
+
+describe("Result Merge", () => {
+    async function myVisitor(value: any, info: ConverterInvocation): Promise<ConversionResult> {
+        const prevResult = await info.proceed()
+        if (info.type === Number)
+            return prevResult.merge(new ConversionMessage(info.path, "Lorem ipsum"))
+        else
+            return prevResult
+    }
+
+    const convert = createConverter({
+        visitors: [myVisitor]
+    })
+
+
+    it("Should merge error on primitive type", async () => {
+        await expect(convert("abc", Number)).rejects.toThrow("Unable to convert \"abc\" into Number, Lorem ipsum")
+    })
+
+    it("Should merge error on nested object property", async () => {
+        @reflect.parameterProperties()
+        class Tag {
+            constructor(public tag: number) { }
+        }
+        @reflect.parameterProperties()
+        class AnimalClass {
+            constructor(
+                public id: number,
+                public tag: Tag,
+            ) { }
+        }
+        await expect(convert({ id: "10", tag: { tag: "abc" } }, AnimalClass))
+            .rejects.toThrow("id Lorem ipsum\ntag.tag Unable to convert \"abc\" into Number, Lorem ipsum")
+    })
+
+    it("Should merge error on array", async () => {
+        @reflect.parameterProperties()
+        class Tag {
+            constructor(public tag: number) { }
+        }
+        await expect(convert([{tag: "1"}, {tag: "123"}], [Tag]))
+            .rejects.toThrow("0.tag Lorem ipsum\n1.tag Lorem ipsum")
+    })
+
+    it("Should be able to merge with previous result", async () => {
+        async function myVisitor(value: any, info: ConverterInvocation): Promise<ConversionResult> {
+            const prevResult = await info.proceed()
+            if (info.type === Number)
+                return prevResult.merge(new ConversionResult(200))
+            else
+                return prevResult
+        }
+        const convert = createConverter({
+            visitors: [myVisitor]
+        })
+        const result = await convert("400", Number)
+        expect(result).toBe(200)
     })
 })

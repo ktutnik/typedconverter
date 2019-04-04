@@ -12,7 +12,7 @@ describe("Date Converter", () => {
     })
     it("Should return undefined if provided null", async () => {
         const result = await convert(null)
-        expect(result).toBeUndefined()
+        expect(result).toBeNull()
     })
     it("Should return undefined if provided undefined", async () => {
         const result = await convert(undefined)
