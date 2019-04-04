@@ -1,6 +1,6 @@
 {
   "name": "typedconverter",
-  "version": "1.0.0-alpha.5",
+  "version": "1.0.0-alpha.6",
   "description": "Convert object into classes match with TypeScript type annotation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,10 +17,10 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
+    "@types/validator": "^10.11.0",
     "tinspector": "^2.2.1",
     "tslib": "^1.9.3",
-    "validator":"^10.11.0",
-    "@types/validator":"^10.11.0"
+    "validator": "^10.11.0"
   },
   "devDependencies": {
     "@types/ejs": "^2.6.3",
@@ -31,13 +31,8 @@
     "jest": "^24.5.0",
     "joi": "^14.3.1",
     "ts-jest": "^24.0.0",
-    "typescript": "^3.3.4000",
-    "ejs":"^2.6.1",
-    "@types/ejs":"^2.6.3",
-    "joi": "^14.3.1",
-    "@types/joi": "^14.3.2"
+    "typescript": "^3.3.4000"
   },
-
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"
   },
