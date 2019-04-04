@@ -1,17 +1,17 @@
-import createConverter, { ConversionError } from "../src"
+import createConverter, { ConversionError, ConverterInvocation, ConversionResult, ConversionMessage } from "../src"
 import reflect from 'tinspector';
 
 const convert = createConverter()
 
 describe("Durability test", () => {
-    it("Should return non converted value if no expected type provided", () => {
-        const result = convert({ a: "123", b: 100 })
+    it("Should return non converted value if no expected type provided", async () => {
+        const result = await convert({ a: "123", b: 100 })
         expect(result).toEqual({ a: "123", b: 100 })
     })
 
-    it("Should not error if provided non safe to string", () => {
+    it("Should not error if provided non safe to string", async () => {
         try {
-            const result = convert(Object.create(null), Number)
+            const result = await convert(Object.create(null), Number)
         }
         catch (e) {
             expect(e.issues).toEqual([{
@@ -21,7 +21,7 @@ describe("Durability test", () => {
         }
     })
 
-    it("Should provide friendly message if unable to instantiate object", () => {
+    it("Should provide friendly message if unable to instantiate object", async () => {
         @reflect.parameterProperties()
         class AnimalClass {
             constructor(
@@ -35,14 +35,14 @@ describe("Durability test", () => {
         }
 
         try {
-            convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, AnimalClass)
+            await convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, AnimalClass)
         }
         catch (e) {
             expect(e.message).toContain("Unable to instantiate AnimalClass")
         }
     })
 
-    it("Should provide friendly message if unable to instantiate object", () => {
+    it("Should provide friendly message if unable to instantiate object", async () => {
         @reflect.parameterProperties()
         class AnimalClass {
             constructor(
@@ -56,14 +56,14 @@ describe("Durability test", () => {
         }
 
         try {
-            convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, AnimalClass)
+            await convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, AnimalClass)
         }
         catch (e) {
             expect(e.message).toContain("Unable to instantiate AnimalClass")
         }
     })
 
-    it("Should provide informative error message", () => {
+    it("Should provide informative error message", async () => {
         @reflect.parameterProperties()
         class AnimalClass {
             constructor(
@@ -75,7 +75,7 @@ describe("Durability test", () => {
         }
 
         try {
-            convert({ id: "200", name: "Mimi", deceased: "ABC", birthday: "DEF" }, AnimalClass)
+            await convert({ id: "200", name: "Mimi", deceased: "ABC", birthday: "DEF" }, AnimalClass)
         }
         catch (e) {
             expect(e.issues).toEqual(
@@ -84,7 +84,7 @@ describe("Durability test", () => {
         }
     })
 
-    it("Should provide informative error message on array", () => {
+    it("Should provide informative error message on array", async () => {
         @reflect.parameterProperties()
         class AnimalClass {
             constructor(
@@ -96,7 +96,7 @@ describe("Durability test", () => {
         }
 
         try {
-            convert([
+            await convert([
                 { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" },
                 { id: "200", name: "Mimi", deceased: "ABC", birthday: "DEF" },
             ], [AnimalClass])
@@ -107,4 +107,5 @@ describe("Durability test", () => {
                 { "messages": ["Unable to convert \"DEF\" into Date"], "path": ["1", "birthday"] }])
         }
     })
+
 })
