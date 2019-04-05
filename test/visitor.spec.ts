@@ -62,6 +62,14 @@ describe("Visitor", () => {
         await expect(convert([{ age: "12" }, { age: "40" }, { age: "12" }], [Tag]))
             .rejects.toThrow("0.age Must be older than 18\n2.age Must be older than 18")
     })
+
+    it("Should execute visitor when no expected type provided", async () => {
+        const convert = createConverter({
+            visitors: [async () => new ConversionResult(2000)]
+        })
+        const result = await convert(123)
+        expect(result).toBe(2000)
+    })
 })
 
 

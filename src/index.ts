@@ -57,25 +57,26 @@ class ConversionError extends Error {
 // ----------------------------- INVOCATION ---------------------------- //
 // --------------------------------------------------------------------- //
 
-abstract class ConverterInvocation implements ObjectInfo<Function | Function[]> {
-    type: Function | Function[]
+abstract class ConverterInvocation implements ObjectInfo<Function | Function[] | undefined> {
+    type: Function | Function[] | undefined
     path: string[]
     converters: Map<string | Function, Converter>
     visitors: Visitor[]
     decorators: any[]
-    constructor(info: ObjectInfo<Function | Function[]>) {
-        this.type = info.type
-        this.path = info.path
-        this.converters = info.converters
-        this.visitors = info.visitors
-        this.decorators = info.decorators
+    constructor({ type, path, converters, visitors, decorators, ...opts }: ObjectInfo<Function | Function[] | undefined>) {
+        this.type = type
+        this.path = path
+        this.converters = converters
+        this.visitors = visitors
+        this.decorators = decorators
+        Object.assign(this, opts)
     }
     abstract proceed(): Promise<ConversionResult>
 }
 
 class VisitorInvocation extends ConverterInvocation {
     private next?: ConverterInvocation
-    constructor(private visitor: Visitor, private value: any, info: ObjectInfo<Function | Function[]>) {
+    constructor(private visitor: Visitor, private value: any, info: ObjectInfo<Function | Function[] | undefined>) {
         super(info)
     }
     chain(next: ConverterInvocation): ConverterInvocation {
@@ -88,15 +89,15 @@ class VisitorInvocation extends ConverterInvocation {
 }
 
 class MainInvocation extends ConverterInvocation {
-    constructor(private value: any, info: ObjectInfo<Function | Function[]>) {
+    constructor(private value: any, info: ObjectInfo<Function | Function[] | undefined>) {
         super(info)
     }
     proceed(): Promise<ConversionResult> {
-        return visitor(this.value, this)
+        return defaultVisitor(this.value, this)
     }
 }
 
-function pipe(value: any, info: ObjectInfo<Function | Function[]>) {
+function pipe(value: any, info: ObjectInfo<Function | Function[] | undefined>) {
     const invocations = info.visitors.map(x => new VisitorInvocation(x, value, { ...info }))
     return invocations.reduce((a, b) => b.chain(a), <ConverterInvocation>new MainInvocation(value, { ...info })).proceed()
 }
@@ -241,8 +242,9 @@ namespace DefaultConverters {
 // --------------------------- MAIN CONVERTER -------------------------- //
 // --------------------------------------------------------------------- //
 
-async function visitor(value: any, { type, converters, ...restInfo }: ObjectInfo<Function | Function[]>): Promise<ConversionResult> {
-    if (type === Object || value.constructor === type) return new ConversionResult(value)
+async function defaultVisitor(value: any, { type, converters, ...restInfo }: ObjectInfo<Function | Function[] | undefined>): Promise<ConversionResult> {
+    if (value === null || value === undefined || !type || type === Object || value.constructor === type)
+        return new ConversionResult(value)
     //check if the parameter contains @array()
     if (Array.isArray(type))
         return converters.get("Array")!(value, { type, converters, ...restInfo })
@@ -255,7 +257,6 @@ async function visitor(value: any, { type, converters, ...restInfo }: ObjectInfo
 }
 
 async function convert(value: any, { type, ...restInfo }: ObjectInfo<Function | Function[] | undefined>): Promise<ConversionResult> {
-    if (value === null || value === undefined || !type) return new ConversionResult(value)
     return pipe(value, { type, ...restInfo })
 }
 
@@ -270,14 +271,13 @@ function converter(factoryOption: FactoryOption = {}) {
             ["Class", DefaultConverters.classConverter],
             ...(factoryOption.converters || []).map(x => (<[Function, Converter]>[x.type, x.converter]))
         ]);
-        const expectedType = Array.isArray(option) || typeof option === "function" ? option : option && option.type
-        const path = typeof option === "object" && !Array.isArray(option) && option.path || []
-        const decorators = typeof option === "object" && !Array.isArray(option) && option.decorators || []
+        const opt: ConverterOption = Array.isArray(option) || typeof option === "function" ?
+            { path: [], decorators: [], type: option } : !!option ? option : { path: [], decorators: [], type: undefined }
+        const { type = factoryOption.type, path = [], decorators = [], ...restOpt } = opt
         const result = await convert(value, {
-            path, type: expectedType || factoryOption.type,
-            converters: mergedConverters,
             visitors: factoryOption.visitors || [],
-            decorators
+            converters: mergedConverters,
+            path, type, decorators, ...restOpt
         })
         if (result.messages.length > 0) throw new ConversionError(result.messages)
         else return result.value
