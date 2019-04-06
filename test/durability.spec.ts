@@ -109,4 +109,12 @@ describe("Durability test", () => {
         }
     })
 
+    it("Should able to override error status", async () => {
+        try {
+            await convert("abcd", {type: Number, errorStatus: 422})
+        }
+        catch (e) {
+            expect(e.status).toEqual(422)
+        }
+    })
 })

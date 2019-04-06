@@ -9,7 +9,7 @@ type Converter = (value: any, info: ObjectInfo<Function | Function[]>) => Promis
 type Visitor = (value: any, invocation: ConverterInvocation) => Promise<ConversionResult>
 type ConverterStore = Map<Function | string, Converter>
 interface FactoryOption { guessArrayElement?: boolean, type?: Function | Function[], converters?: ConverterMap[], visitors?: Visitor[] }
-interface ConverterOption { type?: Function | Function[], path?: string[], decorators?: any[] }
+interface ConverterOption { type?: Function | Function[], path?: string[], decorators?: any[], errorStatus?:number }
 
 interface ConverterMap { type: Function, converter: Converter }
 interface ObjectInfo<T> {
@@ -273,13 +273,13 @@ function converter(factoryOption: FactoryOption = {}) {
         ]);
         const opt: ConverterOption = Array.isArray(option) || typeof option === "function" ?
             { path: [], decorators: [], type: option } : !!option ? option : { path: [], decorators: [], type: undefined }
-        const { type = factoryOption.type, path = [], decorators = [], ...restOpt } = opt
+        const { type = factoryOption.type, path = [], decorators = [], errorStatus = 400, ...restOpt } = opt
         const result = await convert(value, {
             visitors: factoryOption.visitors || [],
             converters: mergedConverters,
             path, type, decorators, ...restOpt
         })
-        if (result.messages.length > 0) throw new ConversionError(result.messages)
+        if (result.messages.length > 0) throw new ConversionError(result.messages, errorStatus)
         else return result.value
     }
 }
