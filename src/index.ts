@@ -9,7 +9,7 @@ type Converter = (value: any, info: ObjectInfo<Function | Function[]>) => Promis
 type Visitor = (value: any, invocation: ConverterInvocation) => Promise<ConversionResult>
 type ConverterStore = Map<Function | string, Converter>
 interface FactoryOption { guessArrayElement?: boolean, type?: Function | Function[], converters?: ConverterMap[], visitors?: Visitor[] }
-interface ConverterOption { type?: Function | Function[], path?: string[], decorators?: any[], errorStatus?:number }
+interface ConverterOption { type?: Function | Function[], path?: string[], decorators?: any[], errorStatus?: number }
 
 interface ConverterMap { type: Function, converter: Converter }
 interface ObjectInfo<T> {
@@ -220,7 +220,6 @@ namespace DefaultConverters {
             ...restInfo
         })))
         const returnedResult = new ConversionResult(result.map(x => x.value))
-        const issue: ConversionMessage[] = []
         for (const item of result) {
             if (item.messages.length > 0) returnedResult.messages = mergeIssue(returnedResult.messages, item.messages)
         }
@@ -260,17 +259,21 @@ async function convert(value: any, { type, ...restInfo }: ObjectInfo<Function | 
     return pipe(value, { type, ...restInfo })
 }
 
+
+const defaultConverter: [Function | string, Converter][] = [
+    [Number, DefaultConverters.numberConverter],
+    [Boolean, DefaultConverters.booleanConverter],
+    [Date, DefaultConverters.dateConverter],
+    ["Class", DefaultConverters.classConverter],
+]
+
 function converter(factoryOption: FactoryOption = {}) {
+    const { friendlyArrayConverter: friendly, strictArrayConverter: strict } = DefaultConverters
+    const converters = defaultConverter
+        .concat([["Array", <Converter>(factoryOption.guessArrayElement ? friendly : strict)]])
+        .concat((factoryOption.converters || []).map(x => (<[Function, Converter]>[x.type, x.converter])))
+    const mergedConverters: ConverterStore = new Map<Function | string, Converter>(converters);
     return async (value: any, option?: Function | Function[] | ConverterOption) => {
-        const { friendlyArrayConverter: friendly, strictArrayConverter: strict } = DefaultConverters
-        const mergedConverters: ConverterStore = new Map<Function | string, Converter>([
-            [Number, DefaultConverters.numberConverter],
-            [Boolean, DefaultConverters.booleanConverter],
-            [Date, DefaultConverters.dateConverter],
-            ["Array", <Converter>(factoryOption.guessArrayElement ? friendly : strict)],
-            ["Class", DefaultConverters.classConverter],
-            ...(factoryOption.converters || []).map(x => (<[Function, Converter]>[x.type, x.converter]))
-        ]);
         const opt: ConverterOption = Array.isArray(option) || typeof option === "function" ?
             { path: [], decorators: [], type: option } : !!option ? option : { path: [], decorators: [], type: undefined }
         const { type = factoryOption.type, path = [], decorators = [], errorStatus = 400, ...restOpt } = opt
