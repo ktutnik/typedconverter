@@ -89,8 +89,8 @@ describe("Visitor", () => {
         expect(result).toEqual({
             parent: undefined,
             value: {
-                id: { parent: AnimalClass, value: 12 },
-                name: { parent: AnimalClass, value: "Mimi" }
+                id: { parent: { type: AnimalClass, decorators: [] }, value: 12 },
+                name: { parent: { type: AnimalClass, decorators: [] }, value: "Mimi" }
             }
         })
     })
@@ -113,14 +113,33 @@ describe("Visitor", () => {
         expect(result).toEqual({
             parent: undefined,
             value: {
-                id: { parent: AnimalClass, value: 12 },
-                name: { parent: AnimalClass, value: "Mimi" },
+                id: { parent: { type: AnimalClass, decorators: [] }, value: 12 },
+                name: { parent: { type: AnimalClass, decorators: [] }, value: "Mimi" },
                 tag: {
-                    parent: AnimalClass,
+                    parent: { type: AnimalClass, decorators: [] },
                     value: {
-                        age: { parent: Tag, value: 12 }
+                        age: { parent: { type: Tag, decorators: [] }, value: 12 }
                     }
                 }
+            }
+        })
+    })
+
+    it("Should provide parent decorators information", async () => {
+        const convert = createConverter({ visitors: [recursiveValue] })
+        @reflect.parameterProperties()
+        class AnimalClass {
+            constructor(
+                public id: number,
+                public name: string,
+            ) { }
+        }
+        const result = await convert({ id: "12", name: "Mimi" }, { type: AnimalClass, decorators: [{ type: "decorator" }] })
+        expect(result).toEqual({
+            parent: undefined,
+            value: {
+                id: { parent: { type: AnimalClass, decorators: [{ type: "decorator" }] }, value: 12 },
+                name: { parent: { type: AnimalClass, decorators: [{ type: "decorator" }] }, value: "Mimi" }
             }
         })
     })

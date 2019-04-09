@@ -14,7 +14,7 @@ interface ConverterOption { type?: Function | Function[], path?: string[], decor
 interface ConverterMap { type: Function, converter: Converter }
 interface ObjectInfo<T> {
     type: T,
-    parent?: Class ,
+    parent?: { type: Class, decorators: any[] },
     path: string[],
     converters: ConverterStore,
     visitors: Visitor[],
@@ -47,7 +47,7 @@ class ConversionMessage {
 }
 
 class ConversionError extends Error {
-    constructor(public issues: ConversionMessage[], public status = 400) {
+    constructor(public issues: ConversionMessage[], public status: number) {
         super(issues.map(x => `${x.path.join(".")} ${x.messages.join(", ")}`).join("\n"))
         Object.setPrototypeOf(this, ConversionError.prototype)
     }
@@ -60,7 +60,7 @@ class ConversionError extends Error {
 
 abstract class ConverterInvocation implements ObjectInfo<Function | Function[] | undefined> {
     type: Function | Function[] | undefined
-    parent?: Class 
+    parent?: { type: Class, decorators: any[] }
     path: string[]
     converters: Map<string | Function, Converter>
     visitors: Visitor[]
@@ -206,7 +206,7 @@ namespace DefaultConverters {
                 path: path.concat(x.name),
                 type: x.type,
                 ...restInfo,
-                decorators: x.decorators
+                decorators: x.decorators.concat(restInfo.decorators)
             })
             if (propResult.messages.length > 0) result.messages = mergeIssue(result.messages, propResult.messages)
             //remove undefined properties
@@ -255,7 +255,10 @@ async function defaultVisitor(value: any, { type, converters, ...restInfo }: Obj
         return converters.get(type)!(value, { type, converters, ...restInfo })
     //if type of model and has no  converter, use DefaultObject converter
     else
-        return converters.get("Class")!(value, { type, converters, ...restInfo, parent: type as Class})
+        return converters.get("Class")!(value, {
+            type, converters, ...restInfo,
+            parent: { type: type as Class, decorators: restInfo.decorators }
+        })
 }
 
 async function convert(value: any, { type, ...restInfo }: ObjectInfo<Function | Function[] | undefined>): Promise<ConversionResult> {
