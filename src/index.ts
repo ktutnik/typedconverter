@@ -14,6 +14,7 @@ interface ConverterOption { type?: Function | Function[], path?: string[], decor
 interface ConverterMap { type: Function, converter: Converter }
 interface ObjectInfo<T> {
     type: T,
+    name:string,
     parent?: { type: Class, decorators: any[] },
     path: string[],
     converters: ConverterStore,
@@ -65,13 +66,15 @@ abstract class ConverterInvocation implements ObjectInfo<Function | Function[] |
     converters: Map<string | Function, Converter>
     visitors: Visitor[]
     decorators: any[]
-    constructor({ type, parent, path, converters, visitors, decorators, ...opts }: ObjectInfo<Function | Function[] | undefined>) {
+    name:string
+    constructor({ type, parent, path, name, converters, visitors, decorators, ...opts }: ObjectInfo<Function | Function[] | undefined>) {
         this.type = type
         this.parent = parent
         this.path = path
         this.converters = converters
         this.visitors = visitors
         this.decorators = decorators
+        this.name = name
         Object.assign(this, opts)
     }
     abstract proceed(): Promise<ConversionResult>
@@ -206,6 +209,7 @@ namespace DefaultConverters {
                 path: path.concat(x.name),
                 type: x.type,
                 ...restInfo,
+                name: x.name,
                 decorators: x.decorators.concat(restInfo.decorators)
             })
             if (propResult.messages.length > 0) result.messages = mergeIssue(result.messages, propResult.messages)
@@ -220,7 +224,8 @@ namespace DefaultConverters {
         const result = await Promise.all(value.map((x, i) => convert(x, {
             path: path.concat(i.toString()),
             type: type[0],
-            ...restInfo
+            ...restInfo,
+            name: i.toString(),
         })))
         const returnedResult = new ConversionResult(result.map(x => x.value))
         for (const item of result) {
@@ -285,7 +290,7 @@ function converter(factoryOption: FactoryOption = {}) {
         const { type = factoryOption.type, path = [], decorators = [], errorStatus = 400, ...restOpt } = opt
         const result = await convert(value, {
             visitors: factoryOption.visitors || [],
-            converters: mergedConverters,
+            converters: mergedConverters, name: path[0] || "",
             path, type, decorators, ...restOpt
         })
         if (result.messages.length > 0) throw new ConversionError(result.messages, errorStatus)

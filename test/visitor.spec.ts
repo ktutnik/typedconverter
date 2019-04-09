@@ -15,6 +15,11 @@ describe("Visitor", () => {
         return new ConversionResult({ parent: info.parent, value: result.value })
     }
 
+    async function nameValue(value: any, info: ConverterInvocation): Promise<ConversionResult> {
+        const result = await info.proceed()
+        return new ConversionResult({ name: info.name, result: result.value })
+    }
+
     const convert = createConverter({
         visitors: [myVisitor]
     })
@@ -141,6 +146,45 @@ describe("Visitor", () => {
                 id: { parent: { type: AnimalClass, decorators: [{ type: "decorator" }] }, value: 12 },
                 name: { parent: { type: AnimalClass, decorators: [{ type: "decorator" }] }, value: "Mimi" }
             }
+        })
+    })
+
+    it("Should provide current traverse name", async () => {
+        const convert = createConverter({ visitors: [nameValue] })
+        @reflect.parameterProperties()
+        class AnimalClass {
+            constructor(
+                public id: number,
+                public name: string,
+            ) { }
+        }
+        const result = await convert({ id: "12", name: "Mimi" }, AnimalClass)
+        expect(result).toEqual({
+            parent: undefined,
+            name: "",
+            result: {
+                id: { name: "id", result: 12 },
+                name: { name: "name", result: "Mimi" }
+            }
+        })
+    })
+
+    it("Should provide current traverse name on array", async () => {
+        const convert = createConverter({ visitors: [nameValue] })
+        @reflect.parameterProperties()
+        class AnimalClass {
+            constructor(
+                public id: number,
+            ) { }
+        }
+        const result = await convert([{ id: "12" }, { id: "12" }], [AnimalClass])
+        expect(result).toEqual({
+            parent: undefined,
+            name: "",
+            result: [
+                { name: "0", result: { id: { name: "id", result: 12 } } },
+                { name: "1", result: { id: { name: "id", result: 12 } } }
+            ]
         })
     })
 })
