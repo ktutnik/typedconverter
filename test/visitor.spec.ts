@@ -10,6 +10,11 @@ describe("Visitor", () => {
         else return prevResult
     }
 
+    async function recursiveValue(value: any, info: ConverterInvocation): Promise<ConversionResult> {
+        const result = await info.proceed()
+        return new ConversionResult({ parent: info.parent, value: result.value })
+    }
+
     const convert = createConverter({
         visitors: [myVisitor]
     })
@@ -69,6 +74,55 @@ describe("Visitor", () => {
         })
         const result = await convert(123)
         expect(result).toBe(2000)
+    })
+
+    it("Should provide parent class information", async () => {
+        const convert = createConverter({ visitors: [recursiveValue] })
+        @reflect.parameterProperties()
+        class AnimalClass {
+            constructor(
+                public id: number,
+                public name: string,
+            ) { }
+        }
+        const result = await convert({ id: "12", name: "Mimi" }, AnimalClass)
+        expect(result).toEqual({
+            parent: undefined,
+            value: {
+                id: { parent: AnimalClass, value: 12 },
+                name: { parent: AnimalClass, value: "Mimi" }
+            }
+        })
+    })
+
+    it("Should provide parent class information on nested object", async () => {
+        const convert = createConverter({ visitors: [recursiveValue] })
+        @reflect.parameterProperties()
+        class Tag {
+            constructor(public age: number) { }
+        }
+        @reflect.parameterProperties()
+        class AnimalClass {
+            constructor(
+                public id: number,
+                public name: string,
+                public tag: Tag
+            ) { }
+        }
+        const result = await convert({ id: "12", name: "Mimi", tag: { age: "12" } }, AnimalClass)
+        expect(result).toEqual({
+            parent: undefined,
+            value: {
+                id: { parent: AnimalClass, value: 12 },
+                name: { parent: AnimalClass, value: "Mimi" },
+                tag: {
+                    parent: AnimalClass,
+                    value: {
+                        age: { parent: Tag, value: 12 }
+                    }
+                }
+            }
+        })
     })
 })
 
@@ -202,7 +256,7 @@ describe("Result Merge", () => {
         class Tag {
             constructor(public tag: number) { }
         }
-        await expect(convert([{tag: "1"}, {tag: "123"}], [Tag]))
+        await expect(convert([{ tag: "1" }, { tag: "123" }], [Tag]))
             .rejects.toThrow("0.tag Lorem ipsum\n1.tag Lorem ipsum")
     })
 

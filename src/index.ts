@@ -14,6 +14,7 @@ interface ConverterOption { type?: Function | Function[], path?: string[], decor
 interface ConverterMap { type: Function, converter: Converter }
 interface ObjectInfo<T> {
     type: T,
+    parent?: Class ,
     path: string[],
     converters: ConverterStore,
     visitors: Visitor[],
@@ -59,12 +60,14 @@ class ConversionError extends Error {
 
 abstract class ConverterInvocation implements ObjectInfo<Function | Function[] | undefined> {
     type: Function | Function[] | undefined
+    parent?: Class 
     path: string[]
     converters: Map<string | Function, Converter>
     visitors: Visitor[]
     decorators: any[]
-    constructor({ type, path, converters, visitors, decorators, ...opts }: ObjectInfo<Function | Function[] | undefined>) {
+    constructor({ type, parent, path, converters, visitors, decorators, ...opts }: ObjectInfo<Function | Function[] | undefined>) {
         this.type = type
+        this.parent = parent
         this.path = path
         this.converters = converters
         this.visitors = visitors
@@ -252,7 +255,7 @@ async function defaultVisitor(value: any, { type, converters, ...restInfo }: Obj
         return converters.get(type)!(value, { type, converters, ...restInfo })
     //if type of model and has no  converter, use DefaultObject converter
     else
-        return converters.get("Class")!(value, { type, converters, ...restInfo })
+        return converters.get("Class")!(value, { type, converters, ...restInfo, parent: type as Class})
 }
 
 async function convert(value: any, { type, ...restInfo }: ObjectInfo<Function | Function[] | undefined>): Promise<ConversionResult> {
