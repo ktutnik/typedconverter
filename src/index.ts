@@ -1,4 +1,4 @@
-import reflect, { decorate } from "tinspector"
+import reflect from "tinspector"
 
 // --------------------------------------------------------------------- //
 // ------------------------------- TYPES ------------------------------- //
@@ -8,18 +8,19 @@ type Class = new (...args: any[]) => any
 type Converter = (value: any, info: ObjectInfo<Function | Function[]>) => Promise<ConversionResult>
 type Visitor = (value: any, invocation: ConverterInvocation) => Promise<ConversionResult>
 type ConverterStore = Map<Function | string, Converter>
-interface FactoryOption { guessArrayElement?: boolean, type?: Function | Function[], converters?: ConverterMap[], visitors?: Visitor[] }
+interface FactoryOption { guessArrayElement?: boolean, type?: Function | Function[], converters?: ConverterMap[], visitors?: Visitor[], interceptor?:(visitor:Visitor) => Visitor }
 interface ConverterOption { type?: Function | Function[], path?: string[], decorators?: any[], errorStatus?: number }
 
 interface ConverterMap { type: Function, converter: Converter }
 interface ObjectInfo<T> {
     type: T,
-    name:string,
+    name: string,
     parent?: { type: Class, decorators: any[] },
     path: string[],
     converters: ConverterStore,
     visitors: Visitor[],
     decorators: any[],
+    interceptor: (visitor:Visitor) => Visitor
 }
 
 class ConversionResult {
@@ -66,16 +67,17 @@ abstract class ConverterInvocation implements ObjectInfo<Function | Function[] |
     converters: Map<string | Function, Converter>
     visitors: Visitor[]
     decorators: any[]
-    name:string
-    constructor({ type, parent, path, name, converters, visitors, decorators, ...opts }: ObjectInfo<Function | Function[] | undefined>) {
-        this.type = type
-        this.parent = parent
-        this.path = path
-        this.converters = converters
-        this.visitors = visitors
-        this.decorators = decorators
-        this.name = name
-        Object.assign(this, opts)
+    name: string
+    interceptor: (visitor:Visitor) => Visitor
+    constructor(info: ObjectInfo<Function | Function[] | undefined>) {
+        this.type = info.type
+        this.parent = info.parent
+        this.path = info.path
+        this.converters = info.converters
+        this.visitors = info.visitors
+        this.decorators = info.decorators
+        this.name = info.name
+        this.interceptor = info.interceptor
     }
     abstract proceed(): Promise<ConversionResult>
 }
@@ -104,8 +106,8 @@ class MainInvocation extends ConverterInvocation {
 }
 
 function pipe(value: any, info: ObjectInfo<Function | Function[] | undefined>) {
-    const invocations = info.visitors.map(x => new VisitorInvocation(x, value, { ...info }))
-    return invocations.reduce((a, b) => b.chain(a), <ConverterInvocation>new MainInvocation(value, { ...info })).proceed()
+    const invocations = info.visitors.map(x => new VisitorInvocation(info.interceptor(x), value, info))
+    return invocations.reduce((a, b) => b.chain(a), <ConverterInvocation>new MainInvocation(value, info)).proceed()
 }
 
 // --------------------------------------------------------------------- //
@@ -188,29 +190,32 @@ namespace DefaultConverters {
         return new ConversionResult(result)
     }
 
-    export async function classConverter(value: {}, { type, path, ...restInfo }: ObjectInfo<Function | Function[]>): Promise<ConversionResult> {
+    export async function classConverter(value: {}, info: ObjectInfo<Function | Function[]>): Promise<ConversionResult> {
         //--- helper functions
         const isConvertibleToObject = (value: any) =>
             typeof value !== "boolean"
             && typeof value !== "number"
             && typeof value !== "string"
         //---
-        const TheType = type as Class
+        const TheType = info.type as Class
         //get reflection metadata of the class
         const reflection = reflect(TheType)
         //check if the value is possible to convert to model
-        if (!isConvertibleToObject(value)) return createMessage(value, TheType, path)
+        if (!isConvertibleToObject(value)) return createMessage(value, TheType, info.path)
         const instance = createInstance(value, TheType)
         //traverse through the object properties and convert to appropriate property's type
         //sanitize excess property to prevent object having properties that doesn't match with declaration
         const result = new ConversionResult(instance)
         for (let x of reflection.properties) {
             const propResult = await convert((value as any)[x.name], {
-                path: path.concat(x.name),
+                interceptor: info.interceptor,
+                converters: info.converters,
+                parent: info.parent,
+                visitors: info.visitors,
+                path: info.path.concat(x.name),
                 type: x.type,
-                ...restInfo,
                 name: x.name,
-                decorators: x.decorators.concat(restInfo.decorators)
+                decorators: x.decorators.concat(info.decorators)
             })
             if (propResult.messages.length > 0) result.messages = mergeIssue(result.messages, propResult.messages)
             //remove undefined properties
@@ -220,11 +225,15 @@ namespace DefaultConverters {
         return result
     }
 
-    async function arrayConverter(value: {}[], { type, path, ...restInfo }: ObjectInfo<Function[]>): Promise<ConversionResult> {
+    async function arrayConverter(value: {}[], info: ObjectInfo<Function[]>): Promise<ConversionResult> {
         const result = await Promise.all(value.map((x, i) => convert(x, {
-            path: path.concat(i.toString()),
-            type: type[0],
-            ...restInfo,
+            interceptor: info.interceptor,
+            converters: info.converters,
+            decorators: info.decorators,
+            parent: info.parent,
+            visitors: info.visitors,
+            path: info.path.concat(i.toString()),
+            type: info.type[0],
             name: i.toString(),
         })))
         const returnedResult = new ConversionResult(result.map(x => x.value))
@@ -249,27 +258,41 @@ namespace DefaultConverters {
 // --------------------------- MAIN CONVERTER -------------------------- //
 // --------------------------------------------------------------------- //
 
-async function defaultVisitor(value: any, { type, converters, ...restInfo }: ObjectInfo<Function | Function[] | undefined>): Promise<ConversionResult> {
+async function defaultVisitor(value: any, info: ObjectInfo<Function | Function[] | undefined>): Promise<ConversionResult> {
+    const type = info.type;
+    const converters = info.converters
     if (value === null || value === undefined || !type || type === Object || value.constructor === type)
         return new ConversionResult(value)
     //check if the parameter contains @array()
     if (Array.isArray(type))
-        return converters.get("Array")!(value, { type, converters, ...restInfo })
+        return converters.get("Array")!(value, {
+            converters: info.converters, decorators: info.decorators, interceptor: info.interceptor,
+            name: info.name, parent: info.parent, path: info.path,
+            visitors: info.visitors, type
+        })
     //check if parameter is native value that has default converter (Number, Date, Boolean) or if user provided converter
     else if (converters.has(type))
-        return converters.get(type)!(value, { type, converters, ...restInfo })
+        return converters.get(type)!(value, {
+            converters: info.converters, decorators: info.decorators, interceptor: info.interceptor,
+            name: info.name, parent: info.parent, path: info.path,
+            visitors: info.visitors, type
+        })
     //if type of model and has no  converter, use DefaultObject converter
     else
         return converters.get("Class")!(value, {
-            type, converters, ...restInfo,
-            parent: { type: type as Class, decorators: restInfo.decorators }
+            interceptor: info.interceptor,
+            decorators: info.decorators,
+            name: info.name,
+            path: info.path,
+            visitors: info.visitors,
+            type, converters,
+            parent: { type: type as Class, decorators: info.decorators }
         })
 }
 
-async function convert(value: any, { type, ...restInfo }: ObjectInfo<Function | Function[] | undefined>): Promise<ConversionResult> {
-    return pipe(value, { type, ...restInfo })
+async function convert(value: any, info: ObjectInfo<Function | Function[] | undefined>): Promise<ConversionResult> {
+    return pipe(value, info)
 }
-
 
 const defaultConverter: [Function | string, Converter][] = [
     [Number, DefaultConverters.numberConverter],
@@ -287,13 +310,14 @@ function converter(factoryOption: FactoryOption = {}) {
     return async (value: any, option?: Function | Function[] | ConverterOption) => {
         const opt: ConverterOption = Array.isArray(option) || typeof option === "function" ?
             { path: [], decorators: [], type: option } : !!option ? option : { path: [], decorators: [], type: undefined }
-        const { type = factoryOption.type, path = [], decorators = [], errorStatus = 400, ...restOpt } = opt
         const result = await convert(value, {
             visitors: factoryOption.visitors || [],
-            converters: mergedConverters, name: path[0] || "",
-            path, type, decorators, ...restOpt
+            converters: mergedConverters, name: opt.path && opt.path[0] || "",
+            path: opt.path || [], type: opt.type || factoryOption.type,
+            decorators: opt.decorators || [],
+            interceptor: factoryOption.interceptor || (v => v)
         })
-        if (result.messages.length > 0) throw new ConversionError(result.messages, errorStatus)
+        if (result.messages.length > 0) throw new ConversionError(result.messages, opt.errorStatus || 400)
         else return result.value
     }
 }

@@ -12,7 +12,8 @@
     "test": "jest",
     "prepublish": "tsc -p tsconfig.build.json",
     "gen": "ts-node src/generator.ts",
-    "clean": "rm -rf src/*.js && rm -rf test/*.js"
+    "clean": "rm -rf src/*.js && rm -rf test/*.js",
+    "benchmark": "ts-node test/benchmark.ts"
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",
@@ -31,6 +32,7 @@
     "jest": "^24.5.0",
     "joi": "^14.3.1",
     "ts-jest": "^24.0.0",
+    "ts-node": "^8.0.3",
     "typescript": "^3.3.4000"
   },
   "bugs": {
