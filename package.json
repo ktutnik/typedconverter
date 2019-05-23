@@ -21,7 +21,7 @@
     "@types/validator": "^10.11.0",
     "tinspector": "^2.2.1",
     "tslib": "^1.9.3",
-    "validator": "^10.11.0"
+    "validator": "^11.0.0"
   },
   "devDependencies": {
     "@types/ejs": "^2.6.3",
