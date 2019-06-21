@@ -1,39 +1,44 @@
 import reflect, { decorateProperty } from "tinspector"
 
-import createConverter, { ConversionMessage, ConversionResult, ConverterInvocation } from "../src"
+import { convert } from "../src"
+import { VisitorInvocation } from '../src/invocation';
+import { Result } from '../src/visitor';
 
 describe("Visitor", () => {
-    async function myVisitor(value: any, info: ConverterInvocation): Promise<ConversionResult> {
-        const prevResult = await info.proceed()
-        if (info.type === Number && prevResult.value < 18)
-            return prevResult.merge(new ConversionMessage(info.path, "Must be older than 18"))
-        else return prevResult
+
+    const nameValue = (i: VisitorInvocation) => {
+        const result = i.proceed()
+        return Result.create({ name: i.path, result: result.value })
     }
 
-    async function recursiveValue(value: any, info: ConverterInvocation): Promise<ConversionResult> {
-        const result = await info.proceed()
-        return new ConversionResult({ parent: info.parent, value: result.value })
+    const getDecorators = (i: VisitorInvocation) => {
+        const result = i.proceed()
+        return Result.create({ decorators: i.decorators, value: result.value })
     }
 
-    async function nameValue(value: any, info: ConverterInvocation): Promise<ConversionResult> {
-        const result = await info.proceed()
-        return new ConversionResult({ name: info.name, result: result.value })
+    const olderThanEightTeen = (i: VisitorInvocation) => {
+        if (i.type === Number && i.value < 18)
+            return Result.error(i.path, "Must be older than 18")
+        else
+            return i.proceed()
     }
 
-    const convert = createConverter({
-        visitors: [myVisitor]
+    it("Should be able to create result of multiple messages", () => {
+        const result = Result.error("path", ["Hello", "world"])
+        expect(result).toMatchSnapshot()
     })
 
-    it("Should convert value properly", async () => {
-        const result = await convert("40", Number)
-        expect(result).toBe(40)
+    it("Should convert value properly", () => {
+        const result = convert("40", { type: Number, visitors: [olderThanEightTeen] })
+        expect(result.value).toBe(40)
     })
 
-    it("Should throw error properly", async () => {
-        await expect(convert("12", Number)).rejects.toThrow("Must be older than 18")
+    it("Should throw error properly", () => {
+        expect(convert("12", { type: Number, visitors: [olderThanEightTeen] }))
+            .toMatchSnapshot()
     })
 
-    it("Should traverse through all object properties", async () => {
+    it("Should traverse through all object properties", () => {
         @reflect.parameterProperties()
         class AnimalClass {
             constructor(
@@ -42,11 +47,11 @@ describe("Visitor", () => {
                 public age: number
             ) { }
         }
-        await expect(convert({ id: "12", name: "Mimi", age: "12" }, AnimalClass))
-            .rejects.toThrow("id Must be older than 18\nage Must be older than 18")
+        expect(convert({ id: "12", name: "Mimi", age: "12" }, { type: AnimalClass, visitors: [olderThanEightTeen] }))
+            .toMatchSnapshot()
     })
 
-    it("Should traverse through nested object properties", async () => {
+    it("Should traverse through nested object properties", () => {
         @reflect.parameterProperties()
         class Tag {
             constructor(public age: number) { }
@@ -59,30 +64,21 @@ describe("Visitor", () => {
                 public tag: Tag
             ) { }
         }
-        await expect(convert({ id: "12", name: "Mimi", tag: { age: "12" } }, AnimalClass))
-            .rejects.toThrow("id Must be older than 18\ntag.age Must be older than 18")
+        expect(convert({ id: "12", name: "Mimi", tag: { age: "12" } }, { type: AnimalClass, visitors: [olderThanEightTeen] }))
+            .toMatchSnapshot()
     })
 
-    it("Should traverse through array", async () => {
+    it("Should traverse through array", () => {
         @reflect.parameterProperties()
         class Tag {
             constructor(public age: number) { }
         }
 
-        await expect(convert([{ age: "12" }, { age: "40" }, { age: "12" }], [Tag]))
-            .rejects.toThrow("0.age Must be older than 18\n2.age Must be older than 18")
+        expect(convert([{ age: "12" }, { age: "40" }, { age: "12" }], { type: [Tag], visitors: [olderThanEightTeen] }))
+            .toMatchSnapshot()
     })
 
-    it("Should execute visitor when no expected type provided", async () => {
-        const convert = createConverter({
-            visitors: [async () => new ConversionResult(2000)]
-        })
-        const result = await convert(123)
-        expect(result).toBe(2000)
-    })
-
-    it("Should provide parent class information", async () => {
-        const convert = createConverter({ visitors: [recursiveValue] })
+    it("Should provide current traverse path", () => {
         @reflect.parameterProperties()
         class AnimalClass {
             constructor(
@@ -90,164 +86,64 @@ describe("Visitor", () => {
                 public name: string,
             ) { }
         }
-        const result = await convert({ id: "12", name: "Mimi" }, AnimalClass)
-        expect(result).toEqual({
-            parent: undefined,
-            value: {
-                id: { parent: { type: AnimalClass, decorators: [] }, value: 12 },
-                name: { parent: { type: AnimalClass, decorators: [] }, value: "Mimi" }
-            }
-        })
+        const result = convert({ id: "12", name: "Mimi" }, { type: AnimalClass, visitors: [nameValue] })
+        expect(result.value).toMatchSnapshot()
     })
 
-    it("Should provide parent class information on nested object", async () => {
-        const convert = createConverter({ visitors: [recursiveValue] })
-        @reflect.parameterProperties()
-        class Tag {
-            constructor(public age: number) { }
-        }
-        @reflect.parameterProperties()
-        class AnimalClass {
-            constructor(
-                public id: number,
-                public name: string,
-                public tag: Tag
-            ) { }
-        }
-        const result = await convert({ id: "12", name: "Mimi", tag: { age: "12" } }, AnimalClass)
-        expect(result).toEqual({
-            parent: undefined,
-            value: {
-                id: { parent: { type: AnimalClass, decorators: [] }, value: 12 },
-                name: { parent: { type: AnimalClass, decorators: [] }, value: "Mimi" },
-                tag: {
-                    parent: { type: AnimalClass, decorators: [] },
-                    value: {
-                        age: { parent: { type: Tag, decorators: [] }, value: 12 }
-                    }
-                }
-            }
-        })
-    })
-
-    it("Should provide parent decorators information", async () => {
-        const convert = createConverter({ visitors: [recursiveValue] })
-        @reflect.parameterProperties()
-        class AnimalClass {
-            constructor(
-                public id: number,
-                public name: string,
-            ) { }
-        }
-        const result = await convert({ id: "12", name: "Mimi" }, { type: AnimalClass, decorators: [{ type: "decorator" }] })
-        expect(result).toEqual({
-            parent: undefined,
-            value: {
-                id: { parent: { type: AnimalClass, decorators: [{ type: "decorator" }] }, value: 12 },
-                name: { parent: { type: AnimalClass, decorators: [{ type: "decorator" }] }, value: "Mimi" }
-            }
-        })
-    })
-
-    it("Should provide current traverse name", async () => {
-        const convert = createConverter({ visitors: [nameValue] })
-        @reflect.parameterProperties()
-        class AnimalClass {
-            constructor(
-                public id: number,
-                public name: string,
-            ) { }
-        }
-        const result = await convert({ id: "12", name: "Mimi" }, AnimalClass)
-        expect(result).toEqual({
-            parent: undefined,
-            name: "",
-            result: {
-                id: { name: "id", result: 12 },
-                name: { name: "name", result: "Mimi" }
-            }
-        })
-    })
-
-    it("Should provide current traverse name on array", async () => {
-        const convert = createConverter({ visitors: [nameValue] })
+    it("Should provide current traverse name on array", () => {
         @reflect.parameterProperties()
         class AnimalClass {
             constructor(
                 public id: number,
             ) { }
         }
-        const result = await convert([{ id: "12" }, { id: "12" }], [AnimalClass])
-        expect(result).toEqual({
-            parent: undefined,
-            name: "",
-            result: [
-                { name: "0", result: { id: { name: "id", result: 12 } } },
-                { name: "1", result: { id: { name: "id", result: 12 } } }
-            ]
-        })
+        const result = convert([{ id: "12" }, { id: "12" }], { type: [AnimalClass], visitors: [nameValue] })
+        expect(result.value).toMatchSnapshot()
     })
 })
 
 
 describe("Multiple Visitors", () => {
-    async function myVisitor(value: any, info: ConverterInvocation): Promise<ConversionResult> {
-        const prevResult = await info.proceed()
-        if (info.type === Number && prevResult.value < 18)
-            return prevResult.merge(new ConversionMessage(info.path, "Must be older than 18"))
-        else return prevResult
-    }
 
-    const convert = createConverter({
-        visitors: [myVisitor, myVisitor]
-    })
-
-    it("Should throw error properly", async () => {
-        @reflect.parameterProperties()
-        class AnimalClass {
-            constructor(
-                public id: number,
-                public name: string,
-                public age: number
-            ) { }
-        }
-        await expect(convert({ id: "12", name: "Mimi", age: "12" }, AnimalClass))
-            .rejects.toThrow("id Must be older than 18, Must be older than 18\nage Must be older than 18, Must be older than 18")
+    it("Should throw error properly", () => {
+        const result = convert("123", {
+            type: Number, visitors: [
+                (i) => Result.create(i.proceed().value + 3),
+                (i) => Result.create(i.proceed().value + 3),
+            ]
+        })
+        expect(result.value).toBe(129)
     })
 })
 
 describe("Decorator distribution", () => {
-    async function myVisitor(value: any, info: ConverterInvocation): Promise<ConversionResult> {
-        const nextResult = await info.proceed()
-        if (info.decorators.some(x => x.type === "deco"))
-            return nextResult.merge(new ConversionMessage(info.path, "Has decorator"))
-        return nextResult
+    function myVisitor(i: VisitorInvocation): Result {
+        return Result.create({ val: i.proceed().value, deco: i.decorators })
     }
-    const convert = createConverter({
-        visitors: [myVisitor]
+
+    const option = { decorators: [{ type: "deco" }], visitors: [myVisitor] }
+
+    it("Should received by primitive converter", () => {
+        expect(convert("123", { ...option, type: Number }).value)
+            .toMatchObject({ val: 123, deco: [{ type: "deco" }] })
     })
 
-    it("Should received by primitive converter", async () => {
-        await expect(convert("123", { type: Number, decorators: [{ type: "deco" }] }))
-            .rejects.toThrow("Has decorator")
-    })
-
-    it("Should received by class properties", async () => {
+    it("Should received by class properties", () => {
         @reflect.parameterProperties()
         class AnimalClass {
             constructor(
                 public id: number,
-                @decorateProperty({ type: "deco" })
+                @decorateProperty({ type: "name" })
                 public name: string,
-                @decorateProperty({ type: "deco" })
+                @decorateProperty({ type: "age" })
                 public age: number
             ) { }
         }
-        await expect(convert({ id: "12", name: "Mimi", age: "12" }, AnimalClass))
-            .rejects.toThrow("name Has decorator\nage Has decorator")
+        expect(convert({ id: "12", name: "Mimi", age: "12" }, { ...option, type: AnimalClass }))
+            .toMatchSnapshot()
     })
 
-    it("Should received by class with nested properties", async () => {
+    it("Should received by class with nested properties", () => {
         @reflect.parameterProperties()
         class Tag {
             constructor(
@@ -263,11 +159,11 @@ describe("Decorator distribution", () => {
                 public tag: Tag
             ) { }
         }
-        await expect(convert({ id: "12", name: "Mimi", tag: { age: "12" } }, AnimalClass))
-            .rejects.toThrow("tag.age Has decorator")
+        expect(convert({ id: "12", name: "Mimi", tag: { age: "12" } }, { ...option, type: AnimalClass }))
+            .toMatchSnapshot()
     })
 
-    it("Should received by array item", async () => {
+    it("Should received by array item", () => {
         @reflect.parameterProperties()
         class Tag {
             constructor(
@@ -275,66 +171,7 @@ describe("Decorator distribution", () => {
                 public age: number) { }
         }
 
-        await expect(convert([{ age: "12" }, { age: "40" }, { age: "12" }], [Tag]))
-            .rejects.toThrow("0.age Has decorator\n1.age Has decorator\n2.age Has decorator")
-    })
-})
-
-describe("Result Merge", () => {
-    async function myVisitor(value: any, info: ConverterInvocation): Promise<ConversionResult> {
-        const prevResult = await info.proceed()
-        if (info.type === Number)
-            return prevResult.merge(new ConversionMessage(info.path, "Lorem ipsum"))
-        else
-            return prevResult
-    }
-
-    const convert = createConverter({
-        visitors: [myVisitor]
-    })
-
-
-    it("Should merge error on primitive type", async () => {
-        await expect(convert("abc", Number)).rejects.toThrow("Unable to convert \"abc\" into Number, Lorem ipsum")
-    })
-
-    it("Should merge error on nested object property", async () => {
-        @reflect.parameterProperties()
-        class Tag {
-            constructor(public tag: number) { }
-        }
-        @reflect.parameterProperties()
-        class AnimalClass {
-            constructor(
-                public id: number,
-                public tag: Tag,
-            ) { }
-        }
-        await expect(convert({ id: "10", tag: { tag: "abc" } }, AnimalClass))
-            .rejects.toThrow("id Lorem ipsum\ntag.tag Unable to convert \"abc\" into Number, Lorem ipsum")
-    })
-
-    it("Should merge error on array", async () => {
-        @reflect.parameterProperties()
-        class Tag {
-            constructor(public tag: number) { }
-        }
-        await expect(convert([{ tag: "1" }, { tag: "123" }], [Tag]))
-            .rejects.toThrow("0.tag Lorem ipsum\n1.tag Lorem ipsum")
-    })
-
-    it("Should be able to merge with previous result", async () => {
-        async function myVisitor(value: any, info: ConverterInvocation): Promise<ConversionResult> {
-            const prevResult = await info.proceed()
-            if (info.type === Number)
-                return prevResult.merge(new ConversionResult(200))
-            else
-                return prevResult
-        }
-        const convert = createConverter({
-            visitors: [myVisitor]
-        })
-        const result = await convert("400", Number)
-        expect(result).toBe(200)
+        expect(convert([{ age: "12" }, { age: "40" }, { age: "12" }], { ...option, type: [Tag] }))
+            .toMatchSnapshot()
     })
 })

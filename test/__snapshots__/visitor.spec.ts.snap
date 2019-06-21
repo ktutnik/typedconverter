@@ -1,0 +1,277 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Decorator distribution Should received by array item 1`] = `
+Object {
+  "value": Object {
+    "deco": Array [
+      Object {
+        "type": "deco",
+      },
+    ],
+    "val": Array [
+      Object {
+        "deco": Array [
+          Object {
+            "type": "deco",
+          },
+        ],
+        "val": Tag {
+          "age": Object {
+            "deco": Array [
+              Object {
+                "type": "deco",
+              },
+            ],
+            "val": 12,
+          },
+        },
+      },
+      Object {
+        "deco": Array [
+          Object {
+            "type": "deco",
+          },
+        ],
+        "val": Tag {
+          "age": Object {
+            "deco": Array [
+              Object {
+                "type": "deco",
+              },
+            ],
+            "val": 40,
+          },
+        },
+      },
+      Object {
+        "deco": Array [
+          Object {
+            "type": "deco",
+          },
+        ],
+        "val": Tag {
+          "age": Object {
+            "deco": Array [
+              Object {
+                "type": "deco",
+              },
+            ],
+            "val": 12,
+          },
+        },
+      },
+    ],
+  },
+}
+`;
+
+exports[`Decorator distribution Should received by class properties 1`] = `
+Object {
+  "value": Object {
+    "deco": Array [
+      Object {
+        "type": "deco",
+      },
+    ],
+    "val": AnimalClass {
+      "age": Object {
+        "deco": Array [
+          Object {
+            "type": "age",
+          },
+        ],
+        "val": 12,
+      },
+      "id": Object {
+        "deco": Array [],
+        "val": 12,
+      },
+      "name": Object {
+        "deco": Array [
+          Object {
+            "type": "name",
+          },
+        ],
+        "val": "Mimi",
+      },
+    },
+  },
+}
+`;
+
+exports[`Decorator distribution Should received by class with nested properties 1`] = `
+Object {
+  "value": Object {
+    "deco": Array [
+      Object {
+        "type": "deco",
+      },
+    ],
+    "val": AnimalClass {
+      "id": Object {
+        "deco": Array [],
+        "val": 12,
+      },
+      "name": Object {
+        "deco": Array [],
+        "val": "Mimi",
+      },
+      "tag": Object {
+        "deco": Array [],
+        "val": Tag {
+          "age": Object {
+            "deco": Array [
+              Object {
+                "type": "deco",
+              },
+            ],
+            "val": 12,
+          },
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`Visitor Should be able to create result of multiple messages 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Hello",
+        "world",
+      ],
+      "path": "path",
+    },
+  ],
+  "value": undefined,
+}
+`;
+
+exports[`Visitor Should provide current traverse name on array 1`] = `
+Object {
+  "name": "",
+  "result": Array [
+    Object {
+      "name": "0",
+      "result": AnimalClass {
+        "id": Object {
+          "name": "0.id",
+          "result": 12,
+        },
+      },
+    },
+    Object {
+      "name": "1",
+      "result": AnimalClass {
+        "id": Object {
+          "name": "1.id",
+          "result": 12,
+        },
+      },
+    },
+  ],
+}
+`;
+
+exports[`Visitor Should provide current traverse path 1`] = `
+Object {
+  "name": "",
+  "result": AnimalClass {
+    "id": Object {
+      "name": "id",
+      "result": 12,
+    },
+    "name": Object {
+      "name": "name",
+      "result": "Mimi",
+    },
+  },
+}
+`;
+
+exports[`Visitor Should throw error properly 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Must be older than 18",
+      ],
+      "path": "",
+    },
+  ],
+  "value": undefined,
+}
+`;
+
+exports[`Visitor Should traverse through all object properties 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Must be older than 18",
+      ],
+      "path": "id",
+    },
+    Object {
+      "messages": Array [
+        "Must be older than 18",
+      ],
+      "path": "age",
+    },
+  ],
+  "value": AnimalClass {
+    "name": "Mimi",
+  },
+}
+`;
+
+exports[`Visitor Should traverse through array 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Must be older than 18",
+      ],
+      "path": "0.age",
+    },
+    Object {
+      "messages": Array [
+        "Must be older than 18",
+      ],
+      "path": "2.age",
+    },
+  ],
+  "value": Array [
+    Tag {},
+    Tag {
+      "age": 40,
+    },
+    Tag {},
+  ],
+}
+`;
+
+exports[`Visitor Should traverse through nested object properties 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Must be older than 18",
+      ],
+      "path": "id",
+    },
+    Object {
+      "messages": Array [
+        "Must be older than 18",
+      ],
+      "path": "tag.age",
+    },
+  ],
+  "value": AnimalClass {
+    "name": "Mimi",
+    "tag": Tag {},
+  },
+}
+`;

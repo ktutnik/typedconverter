@@ -2,7 +2,6 @@ import reflect from "tinspector"
 
 import createConverter from "../src"
 
-const convert = createConverter()
 
 describe("Nested Model", () => {
     @reflect.parameterProperties()
@@ -24,15 +23,16 @@ describe("Nested Model", () => {
             public owner: ClientClass
         ) { }
     }
+    const convert = createConverter({ type: AnimalClass })
 
-    it("Should convert nested model", async () => {
-        const result: AnimalClass = await convert({
+    it("Should convert nested model", () => {
+        const { value: result } = convert({
             id: "200",
             name: "Mimi",
             deceased: "ON",
             birthday: "2018-1-1",
             owner: { id: "400", name: "John Doe", join: "2015-1-1" }
-        }, AnimalClass)
+        })
         expect(result).toBeInstanceOf(AnimalClass)
         expect(result.owner).toBeInstanceOf(ClientClass)
         expect(result).toEqual({
@@ -44,15 +44,15 @@ describe("Nested Model", () => {
         })
     })
 
-    it("Should sanitize excess data", async () => {
-        const result: AnimalClass = await convert({
+    it("Should sanitize excess data", () => {
+        const { value: result } = convert({
             id: "200",
             name: "Mimi",
             deceased: "ON",
             birthday: "2018-1-1",
             excess: "Malicious Code",
             owner: { id: "400", name: "John Doe", join: "2015-1-1", excess: "Malicious Code" }
-        }, AnimalClass)
+        })
         expect(result).toBeInstanceOf(AnimalClass)
         expect(result.owner).toBeInstanceOf(ClientClass)
         expect(result).toEqual({
@@ -64,12 +64,12 @@ describe("Nested Model", () => {
         })
     })
 
-    it("Should allow undefined values", async () => {
-        const result: AnimalClass = await convert({
+    it("Should allow undefined values", () => {
+        const { value: result } = convert({
             id: "200",
             name: "Mimi",
             owner: { id: "400", name: "John Doe" }
-        }, AnimalClass)
+        })
         expect(result).toBeInstanceOf(AnimalClass)
         expect(result.owner).toBeInstanceOf(ClientClass)
         expect(result).toEqual({
@@ -79,33 +79,25 @@ describe("Nested Model", () => {
         })
     })
 
-    it("Should throw if non convertible value provided", async () => {
-        try {
-            await convert({
-                id: "200",
-                name: "Mimi",
-                deceased: "ON",
-                birthday: "2018-1-1",
-                owner: { id: "400", name: "John Doe", join: "Hello" }
-            })
-        }
-        catch (e) {
-            expect(e.issues).toEqual([{ path: ["id", "owner", "join"], messages: [`Unable to convert "Hello" into Date`] }])
-        }
+    it("Should throw if non convertible value provided", () => {
+        const result = convert({
+            id: "200",
+            name: "Mimi",
+            deceased: "ON",
+            birthday: "2018-1-1",
+            owner: { id: "400", name: "John Doe", join: "Hello" }
+        })
+        expect(result.issues).toEqual([{ path: "owner.join", messages: [`Unable to convert "Hello" into Date`] }])
     })
 
-    it("Should throw if non convertible model provided", async () => {
-        try {
-            await convert({
-                id: "200",
-                name: "Mimi",
-                deceased: "ON",
-                birthday: "2018-1-1",
-                owner: "Hello"
-            })
-        }
-        catch (e) {
-            expect(e.issues).toEqual([{ path: ["id", "owner"], messages: [`Unable to convert "Hello" into ClientClass`] }])
-        }
+    it("Should throw if non convertible model provided", () => {
+        const result = convert({
+            id: "200",
+            name: "Mimi",
+            deceased: "ON",
+            birthday: "2018-1-1",
+            owner: "Hello"
+        })
+        expect(result.issues).toEqual([{ path: "owner", messages: [`Unable to convert "Hello" into ClientClass`] }])
     })
 })
