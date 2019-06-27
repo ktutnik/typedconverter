@@ -1,6 +1,6 @@
 import reflect from 'tinspector';
 import joi from "joi"
-import create from "../src"
+import create, {requiredValidationVisitor} from "../src"
 
 @reflect.parameterProperties()
 class Address {
@@ -25,7 +25,7 @@ const schema = joi.object({
     })
 });
 
-const convert = create({ type: MyData });
+const convert = create({ type: MyData, visitors: [requiredValidationVisitor] });
 
 const value = { name: "Lorem ipsum", date: "2018-1-1", address: { zip: "123", city: "CA", number: "123" } };
 

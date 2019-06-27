@@ -134,6 +134,137 @@ Object {
 }
 `;
 
+exports[`Parent Distribution Should add parent information 1`] = `
+Object {
+  "value": Object {
+    "parent": undefined,
+    "result": Tag {
+      "age": Object {
+        "parent": Object {
+          "decorators": Array [],
+          "type": Tag,
+        },
+        "result": 12,
+      },
+    },
+  },
+}
+`;
+
+exports[`Parent Distribution Should add parent information on nested types 1`] = `
+Object {
+  "value": Object {
+    "parent": undefined,
+    "result": Animal {
+      "tag": Object {
+        "parent": Object {
+          "decorators": Array [],
+          "type": Animal,
+        },
+        "result": Tag {
+          "age": Object {
+            "parent": Object {
+              "decorators": Array [
+                Object {
+                  "type": "deco",
+                },
+              ],
+              "type": Tag,
+            },
+            "result": 12,
+          },
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`Parent Distribution Should add parent information on nested types with array 1`] = `
+Object {
+  "value": Object {
+    "parent": undefined,
+    "result": Animal {
+      "tag": Object {
+        "parent": Object {
+          "decorators": Array [],
+          "type": Animal,
+        },
+        "result": Array [
+          Object {
+            "parent": Object {
+              "decorators": Array [],
+              "type": Animal,
+            },
+            "result": Tag {
+              "age": Object {
+                "parent": Object {
+                  "decorators": Array [
+                    Object {
+                      "kind": "Array",
+                      "type": Tag,
+                    },
+                    Object {
+                      "type": "deco",
+                    },
+                  ],
+                  "type": Tag,
+                },
+                "result": 12,
+              },
+            },
+          },
+          Object {
+            "parent": Object {
+              "decorators": Array [],
+              "type": Animal,
+            },
+            "result": Tag {
+              "age": Object {
+                "parent": Object {
+                  "decorators": Array [
+                    Object {
+                      "kind": "Array",
+                      "type": Tag,
+                    },
+                    Object {
+                      "type": "deco",
+                    },
+                  ],
+                  "type": Tag,
+                },
+                "result": 12,
+              },
+            },
+          },
+        ],
+      },
+    },
+  },
+}
+`;
+
+exports[`Parent Distribution Should add parent information with external decorators 1`] = `
+Object {
+  "value": Object {
+    "parent": undefined,
+    "result": Tag {
+      "age": Object {
+        "parent": Object {
+          "decorators": Array [
+            Object {
+              "type": "deco",
+            },
+          ],
+          "type": Tag,
+        },
+        "result": 12,
+      },
+    },
+  },
+}
+`;
+
 exports[`Visitor Should be able to create result of multiple messages 1`] = `
 Object {
   "issues": Array [

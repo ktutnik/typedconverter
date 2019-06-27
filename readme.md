@@ -108,8 +108,11 @@ type Visitor = (invocation: VisitorInvocation) => VisitorResult
 Visitor is a function receive two parameters `value` and `invocation`. 
 * `invocation` next invocation 
 
+Example:
+
+
 ```typescript
-import createConverter, {Result} from "typedconverter"
+import createConverter, { Result, VisitorInvocation } from "typedconverter"
 
 const olderThanEightTeen = (i: VisitorInvocation) => {
     if (i.type === Number && i.value < 18)

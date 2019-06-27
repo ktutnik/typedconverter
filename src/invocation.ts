@@ -1,4 +1,4 @@
-import { Result } from "./visitor";
+import { Result, ParentInfo } from "./visitor";
 import { SuperNode } from './transformer';
 import { Class } from './types';
 
@@ -11,6 +11,7 @@ interface VisitorInvocation {
     type: Class,
     path: string,
     decorators: any[]
+    parent?: ParentInfo
     proceed(): Result
 }
 
@@ -19,12 +20,14 @@ class ExtensionInvocationImpl implements VisitorInvocation {
     type: Class
     path: string
     decorators: any[]
+    parent?:ParentInfo
 
     constructor(public ext: VisitorExtension, private next: VisitorInvocation) {
         this.value = next.value
         this.type = next.type
         this.path = next.path
         this.decorators = next.decorators
+        this.parent = next.parent
     }
 
     proceed() {
@@ -37,11 +40,13 @@ class VisitorInvocationImpl implements VisitorInvocation {
     type: Class
     path: string
     decorators: any[]
-    constructor(value: {}, path: string, private ast: SuperNode, decorators:any[], private visitor: () => Result) {
+    parent?:ParentInfo
+    constructor(value: {}, path: string, private ast: SuperNode, decorators: any[], private visitor: () => Result, parent?:ParentInfo) {
         this.value = value
         this.type = ast.type
         this.path = path
         this.decorators = decorators
+        this.parent = parent
     }
 
     proceed(): Result {
@@ -49,9 +54,9 @@ class VisitorInvocationImpl implements VisitorInvocation {
     }
 }
 
-function pipe(value: {}, strPath: string, ast: SuperNode, decorators: any[], extensions: VisitorExtension[], visitor: () => Result) {
+function pipe(value: {}, strPath: string, ast: SuperNode, decorators: any[], extensions: VisitorExtension[], visitor: () => Result, parent?:ParentInfo) {
     return extensions.reduce((prev, cur) => new ExtensionInvocationImpl(cur, prev),
-        <VisitorInvocation>new VisitorInvocationImpl(value, strPath, ast, decorators, visitor))
+        <VisitorInvocation>new VisitorInvocationImpl(value, strPath, ast, decorators, visitor, parent))
 }
 
 export { pipe, VisitorExtension, VisitorInvocation }

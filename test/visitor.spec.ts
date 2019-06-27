@@ -1,8 +1,7 @@
 import reflect, { decorateProperty } from "tinspector"
 
 import { convert } from "../src"
-import { VisitorInvocation } from '../src/invocation';
-import { Result } from '../src/visitor';
+import { Result, VisitorInvocation } from '../src';
 
 describe("Visitor", () => {
 
@@ -173,5 +172,64 @@ describe("Decorator distribution", () => {
 
         expect(convert([{ age: "12" }, { age: "40" }, { age: "12" }], { ...option, type: [Tag] }))
             .toMatchSnapshot()
+    })
+})
+
+describe("Parent Distribution", () => {
+
+    function addParentTag(i: VisitorInvocation): Result {
+        const result = i.proceed()
+        return Result.create({ result: result.value, parent: i.parent })
+    }
+
+    it("Should add parent information", () => {
+        @reflect.parameterProperties()
+        class Tag {
+            constructor(public age: number) { }
+        }
+
+        expect(convert({ age: "12" }, { type: Tag, visitors: [addParentTag] })).toMatchSnapshot()
+    })
+
+    it("Should add parent information with external decorators", () => {
+        @reflect.parameterProperties()
+        class Tag {
+            constructor(public age: number) { }
+        }
+
+        expect(convert({ age: "12" }, { type: Tag, visitors: [addParentTag], decorators: [{ type: "deco" }] })).toMatchSnapshot()
+    })
+
+    it("Should add parent information on nested types", () => {
+        @reflect.parameterProperties()
+        class Tag {
+            constructor(public age: number) { }
+        }
+
+        @reflect.parameterProperties()
+        class Animal {
+            constructor(
+                @decorateProperty({ type: "deco" })
+                public tag: Tag) { }
+        }
+
+        expect(convert({ tag: { age: "12" } }, { type: Animal, visitors: [addParentTag] })).toMatchSnapshot()
+    })
+
+    it("Should add parent information on nested types with array", () => {
+        @reflect.parameterProperties()
+        class Tag {
+            constructor(public age: number) { }
+        }
+
+        @reflect.parameterProperties()
+        class Animal {
+            constructor(
+                @decorateProperty({ type: "deco" })
+                @reflect.array(Tag)
+                public tag: Tag[]) { }
+        }
+
+        expect(convert({ tag: [{ age: "12" }, { age: "12" }] }, { type: Animal, visitors: [addParentTag] })).toMatchSnapshot()
     })
 })
