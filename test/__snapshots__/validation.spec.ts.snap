@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Array of Object Validator Should valid if optional 1`] = `
+exports[`Optional & Partial Validation Array of Object Validator Should valid if optional 1`] = `
 Object {
   "issues": undefined,
   "value": Array [
@@ -14,7 +14,7 @@ Object {
 }
 `;
 
-exports[`Array of Object Validator Should validate null property 1`] = `
+exports[`Optional & Partial Validation Array of Object Validator Should validate null property 1`] = `
 Object {
   "issues": Array [
     Object {
@@ -41,7 +41,7 @@ Object {
 }
 `;
 
-exports[`Array of Object Validator Should validate undefined property 1`] = `
+exports[`Optional & Partial Validation Array of Object Validator Should validate undefined property 1`] = `
 Object {
   "issues": Array [
     Object {
@@ -68,7 +68,7 @@ Object {
 }
 `;
 
-exports[`Array of Primitive Type Validation Should valid if optional 1`] = `
+exports[`Optional & Partial Validation Array of Primitive Type Validation Should valid if optional 1`] = `
 Object {
   "issues": undefined,
   "value": Array [
@@ -79,7 +79,7 @@ Object {
 }
 `;
 
-exports[`Array of Primitive Type Validation Should validate null 1`] = `
+exports[`Optional & Partial Validation Array of Primitive Type Validation Should validate null 1`] = `
 Object {
   "issues": Array [
     Object {
@@ -97,7 +97,7 @@ Object {
 }
 `;
 
-exports[`Array of Primitive Type Validation Should validate undefined 1`] = `
+exports[`Optional & Partial Validation Array of Primitive Type Validation Should validate undefined 1`] = `
 Object {
   "issues": Array [
     Object {
@@ -115,7 +115,7 @@ Object {
 }
 `;
 
-exports[`Decorators Should able to decorate optional validator 1`] = `
+exports[`Optional & Partial Validation Decorators Should able to decorate optional validator 1`] = `
 Object {
   "ctor": Object {
     "kind": "Constructor",
@@ -208,7 +208,7 @@ Object {
 }
 `;
 
-exports[`Decorators Should able to decorate partial validator 1`] = `
+exports[`Optional & Partial Validation Decorators Should able to decorate partial validator 1`] = `
 Object {
   "ctor": Object {
     "kind": "Constructor",
@@ -254,7 +254,7 @@ Object {
 }
 `;
 
-exports[`Nested Object Validator Should valid if provided null optional 1`] = `
+exports[`Optional & Partial Validation Nested Object Validator Should valid if provided null optional 1`] = `
 Object {
   "issues": undefined,
   "value": AnimalClass {
@@ -269,7 +269,7 @@ Object {
 }
 `;
 
-exports[`Nested Object Validator Should valid if provided undefined optional 1`] = `
+exports[`Optional & Partial Validation Nested Object Validator Should valid if provided undefined optional 1`] = `
 Object {
   "issues": undefined,
   "value": AnimalClass {
@@ -284,7 +284,7 @@ Object {
 }
 `;
 
-exports[`Nested Object Validator Should validate null property 1`] = `
+exports[`Optional & Partial Validation Nested Object Validator Should validate null property 1`] = `
 Object {
   "issues": Array [
     Object {
@@ -306,7 +306,7 @@ Object {
 }
 `;
 
-exports[`Nested Object Validator Should validate undefined property 1`] = `
+exports[`Optional & Partial Validation Nested Object Validator Should validate undefined property 1`] = `
 Object {
   "issues": Array [
     Object {
@@ -328,7 +328,7 @@ Object {
 }
 `;
 
-exports[`Object Validator Should valid if provided null optional 1`] = `
+exports[`Optional & Partial Validation Object Validator Should valid if provided null optional 1`] = `
 Object {
   "issues": undefined,
   "value": AnimalClass {
@@ -339,7 +339,7 @@ Object {
 }
 `;
 
-exports[`Object Validator Should valid if provided undefined optional 1`] = `
+exports[`Optional & Partial Validation Object Validator Should valid if provided undefined optional 1`] = `
 Object {
   "issues": undefined,
   "value": AnimalClass {
@@ -350,7 +350,7 @@ Object {
 }
 `;
 
-exports[`Object Validator Should validate null property 1`] = `
+exports[`Optional & Partial Validation Object Validator Should validate null property 1`] = `
 Object {
   "issues": Array [
     Object {
@@ -368,7 +368,7 @@ Object {
 }
 `;
 
-exports[`Object Validator Should validate undefined property 1`] = `
+exports[`Optional & Partial Validation Object Validator Should validate undefined property 1`] = `
 Object {
   "issues": Array [
     Object {
@@ -386,7 +386,7 @@ Object {
 }
 `;
 
-exports[`Partial Validation Should pass empty field if parent marked with partial 1`] = `
+exports[`Optional & Partial Validation Partial Validation Should pass empty field if parent marked with partial 1`] = `
 Object {
   "issues": undefined,
   "value": AnimalClass {
@@ -395,7 +395,7 @@ Object {
 }
 `;
 
-exports[`Partial Validation Should skip optional validator on partial parent 1`] = `
+exports[`Optional & Partial Validation Partial Validation Should skip optional validator on partial parent 1`] = `
 Object {
   "issues": undefined,
   "value": AnimalClass {
@@ -404,7 +404,7 @@ Object {
 }
 `;
 
-exports[`Partial Validation Should validate whole object even its partial and provided undefined 1`] = `
+exports[`Optional & Partial Validation Partial Validation Should validate whole object even its partial and provided undefined 1`] = `
 Object {
   "issues": Array [
     Object {
@@ -418,13 +418,13 @@ Object {
 }
 `;
 
-exports[`Primitive Type Validation Should valid if optional 1`] = `
+exports[`Optional & Partial Validation Primitive Type Validation Should valid if optional 1`] = `
 Object {
   "value": null,
 }
 `;
 
-exports[`Primitive Type Validation Should validate null 1`] = `
+exports[`Optional & Partial Validation Primitive Type Validation Should validate null 1`] = `
 Object {
   "issues": Array [
     Object {
@@ -438,7 +438,7 @@ Object {
 }
 `;
 
-exports[`Primitive Type Validation Should validate undefined 1`] = `
+exports[`Optional & Partial Validation Primitive Type Validation Should validate undefined 1`] = `
 Object {
   "issues": Array [
     Object {

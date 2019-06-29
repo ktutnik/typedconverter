@@ -1,3 +1,4 @@
+import { Opt, val } from "./decorators"
 import { VisitorExtension, VisitorInvocation } from "./invocation"
 import { transform } from "./transformer"
 import { Class } from "./types"
@@ -7,9 +8,9 @@ import {
     partial,
     PartialValidator,
     requiredValidationVisitor,
-    validate,
     Validator,
-    ValidatorDecorator,
+    validatorVisitor,
+    ValidatorDecorator
 } from "./validation"
 import { pipeline, Result, ResultMessages } from "./visitor"
 
@@ -52,9 +53,17 @@ export default function createConverter(option: Option) {
     return (value: any) => convert(value, option)
 }
 
+function validate(value: any, opt: Option) {
+    const visitors = [requiredValidationVisitor, validatorVisitor]
+    for (const visitor of (opt.visitors || [])) {
+        visitors.push(visitor)
+    }
+    return convert(value, { type: opt.type, decorators: opt.decorators, path: opt.path, visitors })
+}
+
 export {
     convert, Option, VisitorExtension,
-    VisitorInvocation, Result, ResultMessages, validate,
-    optional, partial, requiredValidationVisitor, Validator,
-    ValidatorDecorator, OptionalValidator, PartialValidator
+    VisitorInvocation, Result, ResultMessages,
+    optional, partial, requiredValidationVisitor, validatorVisitor, Validator,
+    OptionalValidator, PartialValidator, val, Opt, validate, ValidatorDecorator
 }
