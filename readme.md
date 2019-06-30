@@ -12,7 +12,7 @@ import { convert } from "typedconverter";
 
 const numb = await convert("12345", { type: Number }) //return number 12345
 const numb = await convert("YES", { type: Boolean }) //return true
-const numb = await convert("2019-1-1", { type: Date }) //return date 1/1/2019
+const numb = await convert("2019-2-2", { type: Date }) //return date 1/1/2019
 ```
 
 ## Specify type on configuration 
@@ -49,7 +49,7 @@ const data = await convert({
     id: "200", 
     name: "Mimi", 
     deceased: "ON", 
-    birthday: "2018-1-1" }, 
+    birthday: "2018-2-2" }, 
     { type: AnimalClass }) 
 ```
 

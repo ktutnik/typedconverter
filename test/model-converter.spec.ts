@@ -15,9 +15,9 @@ describe("Model Converter", () => {
             ) { }
         }
 
-        const result = convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, { type: AnimalClass })
+        const result = convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-2-2" }, { type: AnimalClass })
         expect(result.value).toBeInstanceOf(AnimalClass)
-        expect(result.value).toEqual({ birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi" })
+        expect(result.value).toEqual({ birthday: new Date("2018-2-2"), deceased: true, id: 200, name: "Mimi" })
     })
 
     it("Should not convert excess properties", () => {
@@ -29,7 +29,7 @@ describe("Model Converter", () => {
             ) { }
         }
 
-        const result = convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", }, { type: AnimalClass })
+        const result = convert({ id: "200", name: "Mimi", deceased: "ON", birthday: "2018-2-2", }, { type: AnimalClass })
         expect(result.value).toBeInstanceOf(AnimalClass)
         expect(result.value).toEqual({ id: 200, name: "Mimi" })
     })
@@ -62,7 +62,7 @@ describe("Model Converter", () => {
             ) { }
         }
 
-        const result = convert({ id: "200", name: "Mimi", deceased: "Hello", birthday: "2018-1-1" }, { type: AnimalClass })
+        const result = convert({ id: "200", name: "Mimi", deceased: "Hello", birthday: "2018-2-2" }, { type: AnimalClass })
         expect(result.issues).toEqual([{ path: "deceased", messages: [`Unable to convert "Hello" into Boolean`] }])
     })
 

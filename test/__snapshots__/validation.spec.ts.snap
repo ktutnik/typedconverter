@@ -33,7 +33,7 @@ Object {
   "value": Array [
     undefined,
     AnimalClass {
-      "birthday": 2017-12-31T16:00:00.000Z,
+      "birthday": 2018-02-01T16:00:00.000Z,
       "deceased": true,
       "name": "Mimi",
     },
@@ -60,7 +60,7 @@ Object {
   "value": Array [
     undefined,
     AnimalClass {
-      "birthday": 2017-12-31T16:00:00.000Z,
+      "birthday": 2018-02-01T16:00:00.000Z,
       "deceased": true,
       "name": "Mimi",
     },
@@ -258,7 +258,7 @@ exports[`Optional & Partial Validation Nested Object Validator Should valid if p
 Object {
   "issues": undefined,
   "value": AnimalClass {
-    "birthday": 2017-12-31T16:00:00.000Z,
+    "birthday": 2018-02-01T16:00:00.000Z,
     "deceased": true,
     "id": 123,
     "name": "Mimi",
@@ -273,7 +273,7 @@ exports[`Optional & Partial Validation Nested Object Validator Should valid if p
 Object {
   "issues": undefined,
   "value": AnimalClass {
-    "birthday": 2017-12-31T16:00:00.000Z,
+    "birthday": 2018-02-01T16:00:00.000Z,
     "deceased": true,
     "id": 123,
     "name": "Mimi",
@@ -295,7 +295,7 @@ Object {
     },
   ],
   "value": AnimalClass {
-    "birthday": 2017-12-31T16:00:00.000Z,
+    "birthday": 2018-02-01T16:00:00.000Z,
     "deceased": true,
     "id": 123,
     "name": "Mimi",
@@ -317,7 +317,7 @@ Object {
     },
   ],
   "value": AnimalClass {
-    "birthday": 2017-12-31T16:00:00.000Z,
+    "birthday": 2018-02-01T16:00:00.000Z,
     "deceased": true,
     "id": 123,
     "name": "Mimi",
@@ -361,7 +361,7 @@ Object {
     },
   ],
   "value": AnimalClass {
-    "birthday": 2017-12-31T16:00:00.000Z,
+    "birthday": 2018-02-01T16:00:00.000Z,
     "deceased": true,
     "name": "Mimi",
   },
@@ -379,7 +379,7 @@ Object {
     },
   ],
   "value": AnimalClass {
-    "birthday": 2017-12-31T16:00:00.000Z,
+    "birthday": 2018-02-01T16:00:00.000Z,
     "deceased": true,
     "name": "Mimi",
   },

@@ -93,12 +93,12 @@ describe("Optional & Partial Validation", () => {
         const option = { type: AnimalClass, visitors: [requiredValidationVisitor] }
 
         it("Should validate undefined property", () => {
-            const result = convert({ id: undefined, name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, { ...option })
+            const result = convert({ id: undefined, name: "Mimi", deceased: "ON", birthday: "2018-2-2" }, { ...option })
             expect(result).toMatchSnapshot()
         })
 
         it("Should validate null property", () => {
-            const result = convert({ id: null, name: "Mimi", deceased: "ON", birthday: "2018-1-1" }, { ...option })
+            const result = convert({ id: null, name: "Mimi", deceased: "ON", birthday: "2018-2-2" }, { ...option })
             expect(result).toMatchSnapshot()
         })
 
@@ -157,12 +157,12 @@ describe("Optional & Partial Validation", () => {
         const option = { type: [AnimalClass], visitors: [requiredValidationVisitor] }
 
         it("Should validate undefined property", () => {
-            const result = convert([undefined, { id: undefined, name: "Mimi", deceased: "ON", birthday: "2018-1-1" }], { ...option })
+            const result = convert([undefined, { id: undefined, name: "Mimi", deceased: "ON", birthday: "2018-2-2" }], { ...option })
             expect(result).toMatchSnapshot()
         })
 
         it("Should validate null property", () => {
-            const result = convert([undefined, { id: null, name: "Mimi", deceased: "ON", birthday: "2018-1-1" }], { ...option })
+            const result = convert([undefined, { id: null, name: "Mimi", deceased: "ON", birthday: "2018-2-2" }], { ...option })
             expect(result).toMatchSnapshot()
         })
 
@@ -196,22 +196,22 @@ describe("Optional & Partial Validation", () => {
         const option = { type: AnimalClass, visitors: [requiredValidationVisitor] }
 
         it("Should validate undefined property", () => {
-            const result = convert({ id: "123", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tag: { id: undefined, name: "The Tag" } }, { ...option })
+            const result = convert({ id: "123", name: "Mimi", deceased: "ON", birthday: "2018-2-2", tag: { id: undefined, name: "The Tag" } }, { ...option })
             expect(result).toMatchSnapshot()
         })
 
         it("Should validate null property", () => {
-            const result = convert({ id: "123", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tag: { id: null, name: "The Tag" } }, { ...option })
+            const result = convert({ id: "123", name: "Mimi", deceased: "ON", birthday: "2018-2-2", tag: { id: null, name: "The Tag" } }, { ...option })
             expect(result).toMatchSnapshot()
         })
 
         it("Should valid if provided null optional", () => {
-            const result = convert({ id: "123", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tag: { id: "123", name: null } }, { ...option })
+            const result = convert({ id: "123", name: "Mimi", deceased: "ON", birthday: "2018-2-2", tag: { id: "123", name: null } }, { ...option })
             expect(result).toMatchSnapshot()
         })
 
         it("Should valid if provided undefined optional", () => {
-            const result = convert({ id: "123", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tag: { id: "123", name: undefined } }, { ...option })
+            const result = convert({ id: "123", name: "Mimi", deceased: "ON", birthday: "2018-2-2", tag: { id: "123", name: undefined } }, { ...option })
             expect(result).toMatchSnapshot()
         })
     })

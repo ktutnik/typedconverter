@@ -30,17 +30,17 @@ describe("Nested Model", () => {
             id: "200",
             name: "Mimi",
             deceased: "ON",
-            birthday: "2018-1-1",
-            owner: { id: "400", name: "John Doe", join: "2015-1-1" }
+            birthday: "2018-2-2",
+            owner: { id: "400", name: "John Doe", join: "2015-2-2" }
         })
         expect(result).toBeInstanceOf(AnimalClass)
         expect(result.owner).toBeInstanceOf(ClientClass)
         expect(result).toEqual({
-            birthday: new Date("2018-1-1"),
+            birthday: new Date("2018-2-2"),
             deceased: true,
             id: 200,
             name: "Mimi",
-            owner: { id: 400, name: "John Doe", join: new Date("2015-1-1") }
+            owner: { id: 400, name: "John Doe", join: new Date("2015-2-2") }
         })
     })
 
@@ -49,18 +49,18 @@ describe("Nested Model", () => {
             id: "200",
             name: "Mimi",
             deceased: "ON",
-            birthday: "2018-1-1",
+            birthday: "2018-2-2",
             excess: "Malicious Code",
-            owner: { id: "400", name: "John Doe", join: "2015-1-1", excess: "Malicious Code" }
+            owner: { id: "400", name: "John Doe", join: "2015-2-2", excess: "Malicious Code" }
         })
         expect(result).toBeInstanceOf(AnimalClass)
         expect(result.owner).toBeInstanceOf(ClientClass)
         expect(result).toEqual({
-            birthday: new Date("2018-1-1"),
+            birthday: new Date("2018-2-2"),
             deceased: true,
             id: 200,
             name: "Mimi",
-            owner: { id: 400, name: "John Doe", join: new Date("2015-1-1") }
+            owner: { id: 400, name: "John Doe", join: new Date("2015-2-2") }
         })
     })
 
@@ -84,7 +84,7 @@ describe("Nested Model", () => {
             id: "200",
             name: "Mimi",
             deceased: "ON",
-            birthday: "2018-1-1",
+            birthday: "2018-2-2",
             owner: { id: "400", name: "John Doe", join: "Hello" }
         })
         expect(result.issues).toEqual([{ path: "owner.join", messages: [`Unable to convert "Hello" into Date`] }])
@@ -95,7 +95,7 @@ describe("Nested Model", () => {
             id: "200",
             name: "Mimi",
             deceased: "ON",
-            birthday: "2018-1-1",
+            birthday: "2018-2-2",
             owner: "Hello"
         })
         expect(result.issues).toEqual([{ path: "owner", messages: [`Unable to convert "Hello" into ClientClass`] }])

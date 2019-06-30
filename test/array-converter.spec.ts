@@ -21,14 +21,14 @@ describe("Array Converter", () => {
             ) { }
         }
         const result = convert([
-            { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" },
-            { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" },
-            { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" }
+            { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-2-2" },
+            { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-2-2" },
+            { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-2-2" }
         ], { type: [AnimalClass] })
         expect(result.value).toEqual([
-            { birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi" },
-            { birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi" },
-            { birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi" }
+            { birthday: new Date("2018-2-2"), deceased: true, id: 200, name: "Mimi" },
+            { birthday: new Date("2018-2-2"), deceased: true, id: 200, name: "Mimi" },
+            { birthday: new Date("2018-2-2"), deceased: true, id: 200, name: "Mimi" }
         ])
     })
 
@@ -52,14 +52,14 @@ describe("Array Converter", () => {
             ) { }
         }
         const result = convert([
-            { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tags: [{ id: "300", name: "Tug" }] },
-            { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tags: [{ id: "300", name: "Tug" }] },
-            { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1", tags: [{ id: "300", name: "Tug" }] }
+            { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-2-2", tags: [{ id: "300", name: "Tug" }] },
+            { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-2-2", tags: [{ id: "300", name: "Tug" }] },
+            { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-2-2", tags: [{ id: "300", name: "Tug" }] }
         ], { type: [AnimalClass] })
         expect(result.value).toEqual([
-            { birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi", tags: [{ id: 300, name: "Tug" }] },
-            { birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi", tags: [{ id: 300, name: "Tug" }] },
-            { birthday: new Date("2018-1-1"), deceased: true, id: 200, name: "Mimi", tags: [{ id: 300, name: "Tug" }] }
+            { birthday: new Date("2018-2-2"), deceased: true, id: 200, name: "Mimi", tags: [{ id: 300, name: "Tug" }] },
+            { birthday: new Date("2018-2-2"), deceased: true, id: 200, name: "Mimi", tags: [{ id: 300, name: "Tug" }] },
+            { birthday: new Date("2018-2-2"), deceased: true, id: 200, name: "Mimi", tags: [{ id: 300, name: "Tug" }] }
         ])
     })
 
@@ -97,10 +97,10 @@ describe("Array Converter", () => {
             ) { }
         }
         const value = [{
-            id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
+            id: "200", name: "Mimi", deceased: "ON", birthday: "2018-2-2",
             tags: [{ id: "500", name: "Rabies" }, { id: "600", name: "Rabies Two" }]
         }, {
-            id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1",
+            id: "200", name: "Mimi", deceased: "ON", birthday: "2018-2-2",
             tags: [{ id: "500", name: "Rabies" }, { id: "Hello", name: "Rabies Two" }]
         }]
         const result = convert(value, { type: [AnimalModel] })

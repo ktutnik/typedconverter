@@ -12,7 +12,7 @@ describe("Validator Decorator Tests", () => {
                 public property: Date
             ) { }
         }
-        const result = convert({ property: "2017-1-1" }, { ...option, type: Dummy, })
+        const result = convert({ property: "2017-2-2" }, { ...option, type: Dummy, })
         expect(result.issues).toMatchObject([{ path: "property", messages: ["Lorem ipsum dolor"] }])
     })
 
@@ -20,11 +20,11 @@ describe("Validator Decorator Tests", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.after({ message: "Lorem ipsum dolor", date: "2018-1-1" })
+                @val.after({ message: "Lorem ipsum dolor", date: "2018-2-2" })
                 public property: Date
             ) { }
         }
-        const result = convert({ property: "2017-1-1" }, { ...option, type: Dummy, })
+        const result = convert({ property: "2017-2-2" }, { ...option, type: Dummy, })
         expect(result.issues).toMatchObject([{ path: "property", messages: ["Lorem ipsum dolor"] }])
     })
 
@@ -80,11 +80,11 @@ describe("Validator Decorator Tests", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.before({ message: "Lorem ipsum dolor", date: "2018-1-1" })
+                @val.before({ message: "Lorem ipsum dolor", date: "2018-2-2" })
                 public property: Date
             ) { }
         }
-        const result = convert({ property: new Date("2019-1-1") }, { ...option, type: Dummy, })
+        const result = convert({ property: new Date("2019-2-2") }, { ...option, type: Dummy, })
         expect(result.issues).toMatchObject([{ path: "property", messages: ["Lorem ipsum dolor"] }])
     })
 
@@ -96,7 +96,7 @@ describe("Validator Decorator Tests", () => {
                 public property: Date
             ) { }
         }
-        const result = convert({ property: new Date("3025-1-1") }, { ...option, type: Dummy, })
+        const result = convert({ property: new Date("3025-2-2") }, { ...option, type: Dummy, })
         expect(result.issues).toMatchObject([{ path: "property", messages: ["Lorem ipsum dolor"] }])
     })
 

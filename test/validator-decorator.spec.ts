@@ -12,7 +12,7 @@ describe("Validator Decorator Tests", () => {
                 public property: Date
             ) { }
         }
-        const result = convert({ property: "2017-1-1" }, { ...option, type: Dummy, })
+        const result = convert({ property: "2017-2-2" }, { ...option, type: Dummy, })
         expect(result.issues).toMatchObject([{ path: "property", messages: ["Date must be greater than today"] }])
     })
 
@@ -20,12 +20,12 @@ describe("Validator Decorator Tests", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.after({ date: "2018-1-1" })
+                @val.after({ date: "2018-2-2" })
                 public property: Date
             ) { }
         }
-        const result = convert({ property: "2017-1-1" }, { ...option, type: Dummy, })
-        expect(result.issues).toMatchObject([{ path: "property", messages: ["Date must be greater than 2018-1-1"] }])
+        const result = convert({ property: "2017-2-2" }, { ...option, type: Dummy, })
+        expect(result.issues).toMatchObject([{ path: "property", messages: ["Date must be greater than 2018-2-2"] }])
     })
 
     test("alpha", () => {
@@ -80,12 +80,12 @@ describe("Validator Decorator Tests", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.before({ date: "2018-1-1" })
+                @val.before({ date: "2018-2-2" })
                 public property: Date
             ) { }
         }
-        const result = convert({ property: new Date("2019-1-1") }, { ...option, type: Dummy, })
-        expect(result.issues).toMatchObject([{ path: "property", messages: ["Date must be less than 2018-1-1"] }])
+        const result = convert({ property: new Date("2019-2-2") }, { ...option, type: Dummy, })
+        expect(result.issues).toMatchObject([{ path: "property", messages: ["Date must be less than 2018-2-2"] }])
     })
 
     test("before()", () => {
@@ -96,7 +96,7 @@ describe("Validator Decorator Tests", () => {
                 public property: Date
             ) { }
         }
-        const result = convert({ property: new Date("3025-1-1") }, { ...option, type: Dummy, })
+        const result = convert({ property: new Date("3025-2-2") }, { ...option, type: Dummy, })
         expect(result.issues).toMatchObject([{ path: "property", messages: ["Date must be less than today"] }])
     })
 

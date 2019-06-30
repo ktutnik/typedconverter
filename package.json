@@ -12,28 +12,28 @@
     "test": "jest",
     "prepublish": "tsc -p tsconfig.build.json",
     "gen": "ts-node src/generator.ts",
-    "clean": "rm -rf src/*.js && rm -rf test/*.js",
+    "clean": "rm -rf src/*.js && rm -rf test/*.js && rm -rf lib",
     "benchmark": "ts-node test/benchmark.ts"
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@types/validator": "^10.11.0",
-    "tinspector": "^2.2.1",
-    "tslib": "^1.9.3",
+    "@types/validator": "^10.11.1",
+    "tinspector": "^2.2.2",
+    "tslib": "^1.10.0",
     "validator": "^11.0.0"
   },
   "devDependencies": {
     "@types/ejs": "^2.6.3",
-    "@types/jest": "^24.0.11",
-    "@types/joi": "^14.3.2",
-    "coveralls": "^3.0.3",
-    "ejs": "^2.6.1",
-    "jest": "^24.5.0",
+    "@types/jest": "^24.0.15",
+    "@types/joi": "^14.3.3",
+    "coveralls": "^3.0.4",
+    "ejs": "^2.6.2",
+    "jest": "^24.8.0",
     "joi": "^14.3.1",
-    "ts-jest": "^24.0.0",
-    "ts-node": "^8.0.3",
-    "typescript": "^3.3.4000"
+    "ts-jest": "^24.0.2",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.2"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"

@@ -27,7 +27,7 @@ const schema = joi.object({
 
 const convert = create({ type: MyData, visitors: [requiredValidationVisitor] });
 
-const value = { name: "Lorem ipsum", date: "2018-1-1", address: { zip: "123", city: "CA", number: "123" } };
+const value = { name: "Lorem ipsum", date: "2018-2-2", address: { zip: "123", city: "CA", number: "123" } };
 
 (async () => {
     console.log(convert(value))

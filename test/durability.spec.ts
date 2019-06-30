@@ -41,7 +41,7 @@ describe("Durability test", () => {
             ) { }
         }
         const result = convert([
-            { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-1-1" },
+            { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-2-2" },
             { id: "200", name: "Mimi", deceased: "ABC", birthday: "DEF" },
         ], { type: [AnimalClass] })
         expect(result.issues).toEqual(
