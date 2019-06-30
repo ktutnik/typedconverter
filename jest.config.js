@@ -4,6 +4,7 @@ module.exports = {
   collectCoverage:true,
   collectCoverageFrom: ["src/*"],
   snapshotSerializers: [
-    "<rootDir>script/function-snapshot-serializer.js"
+    "<rootDir>script/function-snapshot-serializer.js",
+    "<rootDir>script/date-snapshot-serializer.js"
   ]
 };
