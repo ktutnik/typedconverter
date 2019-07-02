@@ -1,4 +1,4 @@
-import reflect from "tinspector"
+import reflect, { mergeDecorator } from "tinspector"
 
 import { safeToString } from "./converter"
 import { pipe, VisitorExtension } from "./invocation"
@@ -22,6 +22,14 @@ interface Result {
 interface ParentInfo {
     type: Class
     decorators: any[]
+}
+
+interface VisitorOption {
+    path: string
+    extension: VisitorExtension[]
+    decorators: any[],
+    guessArrayElement: boolean,
+    parent?: ParentInfo
 }
 
 namespace Result {
@@ -48,7 +56,6 @@ const visitorMap = {
     "Object": objectVisitor,
 }
 
-
 function unableToConvert(value: {}, type: string) {
     return `Unable to convert "${safeToString(value)}" into ${type}`
 }
@@ -57,21 +64,27 @@ function unableToConvert(value: {}, type: string) {
 // ------------------------------ VISITORS ----------------------------- //
 // --------------------------------------------------------------------- //
 
-function primitiveVisitor(value: {}, ast: PrimitiveNode, path: string, extension: VisitorExtension[], decorators: any[], parent?: ParentInfo): Result {
+function primitiveVisitor(value: {}, ast: PrimitiveNode, opt: VisitorOption): Result {
     const result = ast.converter(value)
     if (result === undefined)
-        return Result.error(path, unableToConvert(value, ast.type.name))
+        return Result.error(opt.path, unableToConvert(value, ast.type.name))
     else
         return Result.create(result)
 }
 
-function arrayVisitor(value: {}[], ast: ArrayNode, path: string, extension: VisitorExtension[], decorators: any[], parent?: ParentInfo): Result {
-    const newValues = Array.isArray(value) ? value : [value]
+function arrayVisitor(value: {}[], ast: ArrayNode, opt: VisitorOption): Result {
+    const newValues = opt.guessArrayElement && !Array.isArray(value) ? [value] : value
+    if (!Array.isArray(newValues)) return Result.error(opt.path, unableToConvert(value, `Array<${ast.type.name}>`))
     const result: any[] = []
     const errors: ResultMessages[] = []
     for (let i = 0; i < newValues.length; i++) {
-        const val = value[i];
-        const elValue = pipeline(val, ast.element as SuperNode, getPath(path, i.toString()), extension, decorators, parent)
+        const val = newValues[i];
+        const option = {
+            path: getPath(opt.path, i.toString()), extension: opt.extension,
+            decorators: opt.decorators, parent: opt.parent,
+            guessArrayElement: opt.guessArrayElement
+        }
+        const elValue = pipeline(val, ast.element as SuperNode, option)
         result.push(elValue.value)
         if (elValue.issues)
             errors.push(...elValue.issues)
@@ -79,15 +92,20 @@ function arrayVisitor(value: {}[], ast: ArrayNode, path: string, extension: Visi
     return { value: result, issues: errors.length === 0 ? undefined : errors }
 }
 
-function objectVisitor(value: any, ast: ObjectNode, path: string, extension: VisitorExtension[], decorators: any[], parent?: ParentInfo): Result {
+function objectVisitor(value: any, ast: ObjectNode, opt: VisitorOption): Result {
     if (typeof value === "number" || typeof value === "string" || typeof value === "boolean")
-        return Result.error(path, unableToConvert(value, ast.type.name))
+        return Result.error(opt.path, unableToConvert(value, ast.type.name))
     const instance = Object.create(ast.type.prototype)
     const meta = reflect(ast.type)
     const errors: ResultMessages[] = []
     for (const property of meta.properties) {
         const node = ast.properties.get(property.name) as SuperNode
-        const propValue = pipeline(value[property.name], node, getPath(path, property.name), extension, property.decorators, { type: ast.type, decorators: decorators })
+        const option = {
+            path: getPath(opt.path, property.name), extension: opt.extension,
+            decorators: property.decorators, parent: { type: ast.type, decorators: opt.decorators },
+            guessArrayElement: opt.guessArrayElement
+        }
+        const propValue = pipeline(value[property.name], node, option)
         if (propValue.issues)
             errors.push(...propValue.issues)
         if (propValue.value == undefined || propValue.value === null) continue
@@ -96,13 +114,13 @@ function objectVisitor(value: any, ast: ObjectNode, path: string, extension: Vis
     return { value: instance, issues: errors.length === 0 ? undefined : errors }
 }
 
-function visitor(value: any, ast: SuperNode, path: string, extension: VisitorExtension[], decorators: any[], parent?: ParentInfo): Result {
+function visitor(value: any, ast: SuperNode, opt: VisitorOption): Result {
     if (value === undefined || value === null || value.constructor === ast.type || ast.type === Object) return { value }
-    return visitorMap[ast.kind](value, ast as any, path, extension, decorators, parent)
+    return visitorMap[ast.kind](value, ast as any, opt)
 }
 
-function pipeline(value: any, ast: SuperNode, path: string, extension: VisitorExtension[], decorators: any[], parent?: ParentInfo): Result {
-    const visitors = pipe(value, path, ast, decorators, extension, () => visitor(value, ast as any, path, extension, decorators, parent), parent)
+function pipeline(value: any, ast: SuperNode, opt: VisitorOption): Result {
+    const visitors = pipe(value, opt.path, ast, opt.decorators, opt.extension, () => visitor(value, ast as any, opt), opt.parent)
     return visitors.proceed()
 }
 

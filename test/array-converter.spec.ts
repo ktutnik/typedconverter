@@ -63,19 +63,19 @@ describe("Array Converter", () => {
         ])
     })
 
-    // it("Should error if provided expectedType of type of array", () => {
-    //     @reflect.parameterProperties()
-    //     class AnimalClass {
-    //         constructor(
-    //             public id: number,
-    //             public name: string,
-    //             public deceased: boolean,
-    //             public birthday: Date
-    //         ) { }
-    //     }
-    //     const result = convert("123", { type: [AnimalClass] })
-    //     expect(result.issues).toEqual([{ messages: ["Unable to convert \"123\" into Array<AnimalClass>",], path: "" }])
-    // })
+    it("Should error if provided expectedType of type of array", () => {
+        @reflect.parameterProperties()
+        class AnimalClass {
+            constructor(
+                public id: number,
+                public name: string,
+                public deceased: boolean,
+                public birthday: Date
+            ) { }
+        }
+        const result = convert("123", { type: [AnimalClass] })
+        expect(result.issues).toEqual([{ messages: ["Unable to convert \"123\" into Array<AnimalClass>",], path: "" }])
+    })
 
     it("Should error if provided wrong vlaue in nested array", () => {
         @reflect.parameterProperties()
@@ -108,7 +108,7 @@ describe("Array Converter", () => {
     })
 
     it("Should able to guess non array for single element as element if defined", () => {
-        const b = convert("1234", { type: [Number] })
-        expect(b.value).toEqual([1])
+        const b = convert("1234", { type: [Number], guessArrayElement: true })
+        expect(b.value).toEqual([1234])
     })
 })

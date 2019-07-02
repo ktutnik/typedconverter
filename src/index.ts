@@ -33,7 +33,12 @@ interface Option {
     /**
      * Root path
      */
-    path?: string
+    path?: string,
+
+    /**
+     * Guess single value as array element if expected type is array. Default false
+     */
+    guessArrayElement?: boolean
 }
 
 /**
@@ -42,7 +47,11 @@ interface Option {
  * @param opt 
  */
 function convert(value: any, opt: Option) {
-    return pipeline(value, transform(opt.type), opt.path || "", opt.visitors || [], opt.decorators || [])
+    return pipeline(value, transform(opt.type), {
+        path: opt.path || "", extension: opt.visitors || [],
+        decorators: opt.decorators || [],
+        guessArrayElement: opt.guessArrayElement || false
+    })
 }
 
 /**
@@ -58,7 +67,10 @@ function validate(value: any, opt: Option) {
     for (const visitor of (opt.visitors || [])) {
         visitors.push(visitor)
     }
-    return convert(value, { type: opt.type, decorators: opt.decorators, path: opt.path, visitors })
+    return convert(value, { 
+        decorators: opt.decorators, guessArrayElement: opt.guessArrayElement, 
+        path: opt.path, type: opt.type, visitors
+    })
 }
 
 export {

@@ -92,7 +92,7 @@ const numb = await convert({name: "Mimi", tags: [{name: "Susi"}, {name: "Lorem"}
 Useful when converting data from url encoded, where single value could be a single array. 
 
 ```typescript
-const b = await convert("1", { type: [Number] }) //ok [1]
+const b = await convert("1", { type: [Number], guessArrayElement: true }) //ok [1]
 ```
 
 

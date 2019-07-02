@@ -48,4 +48,16 @@ describe("Durability test", () => {
             [{ "messages": ["Unable to convert \"ABC\" into Boolean"], "path": "1.deceased" },
             { "messages": ["Unable to convert \"DEF\" into Date"], "path": "1.birthday" }])
     })
+
+    it("Should give informative information on array if provided string value type", () => {
+        const result = convert("Hello", { type: [Number] })
+        expect(result.issues).toEqual(
+            [{ "messages": ["Unable to convert \"Hello\" into Array<Number>"], "path": "" }])
+    })
+
+    it("Should give informative information on array if provided object value type", () => {
+        const result = convert({ message: "Hello" }, { type: [Number] })
+        expect(result.issues).toEqual(
+            [{ "messages": ["Unable to convert \"[object Object]\" into Array<Number>"], "path": "" }])
+    })
 })
