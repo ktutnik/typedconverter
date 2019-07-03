@@ -301,7 +301,7 @@ describe("Validator", () => {
             ) { }
         }
         const result = validate({ property: undefined }, { type: Dummy, })
-        expect(result).toMatchObject({ value: {} })
+        expect(result).toMatchObject({ value: {}, issues: undefined })
     })
 
     it("Should able combine optional and invalid email", () => {
@@ -331,8 +331,8 @@ describe("Validator", () => {
     })
 
     it("Should able to add custom visitor", () => {
-        const visitor = (i:VisitorInvocation) => {
-            if(i.type === String) return Result.create("lorem ipsum")
+        const visitor = (i: VisitorInvocation) => {
+            if (i.type === String) return Result.create("lorem ipsum")
             else return i.proceed()
         }
         @reflect.parameterProperties()
