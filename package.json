@@ -21,13 +21,13 @@
     "@types/validator": "^10.11.1",
     "tinspector": "^2.2.2",
     "tslib": "^1.10.0",
-    "validator": "^11.0.0"
+    "validator": "^11.1.0"
   },
   "devDependencies": {
     "@types/ejs": "^2.6.3",
     "@types/jest": "^24.0.15",
     "@types/joi": "^14.3.3",
-    "coveralls": "^3.0.4",
+    "coveralls": "^3.0.5",
     "ejs": "^2.6.2",
     "jest": "^24.8.0",
     "joi": "^14.3.1",
