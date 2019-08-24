@@ -18,22 +18,22 @@
   "author": "Ketut Sandiarsa",
   "license": "MIT",
   "dependencies": {
-    "@types/validator": "^10.11.1",
+    "@types/validator": "^10.11.3",
     "tinspector": "^2.2.2",
     "tslib": "^1.10.0",
     "validator": "^11.1.0"
   },
   "devDependencies": {
     "@types/ejs": "^2.6.3",
-    "@types/jest": "^24.0.15",
+    "@types/jest": "^24.0.18",
     "@types/joi": "^14.3.3",
-    "coveralls": "^3.0.5",
+    "coveralls": "^3.0.6",
     "ejs": "^2.6.2",
-    "jest": "^24.8.0",
+    "jest": "^24.9.0",
     "joi": "^14.3.1",
     "ts-jest": "^24.0.2",
     "ts-node": "^8.3.0",
-    "typescript": "^3.5.2"
+    "typescript": "^3.5.3"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"
