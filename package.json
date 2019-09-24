@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/validator": "^10.11.3",
-    "tinspector": "^2.2.3",
+    "tinspector": "^2.2.5",
     "tslib": "^1.10.0",
     "validator": "^11.1.0"
   },
