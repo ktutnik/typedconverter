@@ -20,6 +20,7 @@ interface Result {
 }
 
 interface ParentInfo {
+    value: any,
     type: Class
     decorators: any[]
 }
@@ -102,7 +103,7 @@ function objectVisitor(value: any, ast: ObjectNode, opt: VisitorOption): Result 
         const node = ast.properties.get(property.name) as SuperNode
         const option = {
             path: getPath(opt.path, property.name), extension: opt.extension,
-            decorators: property.decorators, parent: { type: ast.type, decorators: opt.decorators },
+            decorators: property.decorators, parent: { value, type: ast.type, decorators: opt.decorators },
             guessArrayElement: opt.guessArrayElement
         }
         const propValue = pipeline(value[property.name], node, option)

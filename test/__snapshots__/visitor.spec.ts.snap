@@ -143,6 +143,9 @@ Object {
         "parent": Object {
           "decorators": Array [],
           "type": Tag,
+          "value": Object {
+            "age": "12",
+          },
         },
         "result": 12,
       },
@@ -160,6 +163,11 @@ Object {
         "parent": Object {
           "decorators": Array [],
           "type": Animal,
+          "value": Object {
+            "tag": Object {
+              "age": "12",
+            },
+          },
         },
         "result": Tag {
           "age": Object {
@@ -170,6 +178,9 @@ Object {
                 },
               ],
               "type": Tag,
+              "value": Object {
+                "age": "12",
+              },
             },
             "result": 12,
           },
@@ -189,12 +200,32 @@ Object {
         "parent": Object {
           "decorators": Array [],
           "type": Animal,
+          "value": Object {
+            "tag": Array [
+              Object {
+                "age": "12",
+              },
+              Object {
+                "age": "12",
+              },
+            ],
+          },
         },
         "result": Array [
           Object {
             "parent": Object {
               "decorators": Array [],
               "type": Animal,
+              "value": Object {
+                "tag": Array [
+                  Object {
+                    "age": "12",
+                  },
+                  Object {
+                    "age": "12",
+                  },
+                ],
+              },
             },
             "result": Tag {
               "age": Object {
@@ -209,6 +240,9 @@ Object {
                     },
                   ],
                   "type": Tag,
+                  "value": Object {
+                    "age": "12",
+                  },
                 },
                 "result": 12,
               },
@@ -218,6 +252,16 @@ Object {
             "parent": Object {
               "decorators": Array [],
               "type": Animal,
+              "value": Object {
+                "tag": Array [
+                  Object {
+                    "age": "12",
+                  },
+                  Object {
+                    "age": "12",
+                  },
+                ],
+              },
             },
             "result": Tag {
               "age": Object {
@@ -232,6 +276,9 @@ Object {
                     },
                   ],
                   "type": Tag,
+                  "value": Object {
+                    "age": "12",
+                  },
                 },
                 "result": 12,
               },
@@ -257,6 +304,9 @@ Object {
             },
           ],
           "type": Tag,
+          "value": Object {
+            "age": "12",
+          },
         },
         "result": 12,
       },
