@@ -102,6 +102,11 @@ describe("Optional & Partial Validation", () => {
             expect(result).toMatchSnapshot()
         })
 
+        it("Should validate empty string property", () => {
+            const result = convert({ id: "200", name: "", deceased: "ON", birthday: "2018-2-2" }, { ...option })
+            expect(result).toMatchSnapshot()
+        })
+
         it("Should valid if provided null optional", () => {
             const result = convert({ id: "123", name: "Mimi", deceased: "ON", birthday: null }, { ...option })
             expect(result).toMatchSnapshot()
