@@ -35,8 +35,10 @@ function booleanConverter(rawValue: {}) {
 
 function numberConverter(rawValue: {}) {
     const value = safeToString(rawValue)
+    if (value === "") return
     const result = Number(value)
-    return isNaN(result) ? undefined : result
+    if (isNaN(result)) return
+    return result
 }
 
 function dateConverter(rawValue: {}) {

@@ -350,6 +350,24 @@ Object {
 }
 `;
 
+exports[`Optional & Partial Validation Object Validator Should validate empty string property 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "name",
+    },
+  ],
+  "value": AnimalClass {
+    "birthday": 2018-02-02,
+    "deceased": true,
+    "id": 200,
+  },
+}
+`;
+
 exports[`Optional & Partial Validation Object Validator Should validate null property 1`] = `
 Object {
   "issues": Array [
