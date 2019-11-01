@@ -39,7 +39,7 @@ function isPartial(i: VisitorInvocation) {
 }
 
 function isEmpty(result: Result) {
-    return (result.value === "" || result.value === undefined || result.value === null) && result.issues === undefined
+    return (result.value === "" || result.value === undefined || result.value === null)
 }
 
 // --------------------------------------------------------------------- //
