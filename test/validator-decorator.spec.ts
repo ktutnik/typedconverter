@@ -1,5 +1,6 @@
 import { convert, requiredValidationVisitor, val, validatorVisitor } from "../src"
 import reflect from 'tinspector';
+import { createValidation } from '../src/validation';
 
 const option = { visitors: [requiredValidationVisitor, validatorVisitor] }
 
@@ -602,5 +603,17 @@ describe("Validator Decorator Tests", () => {
         }
         const result = convert({ property: "abc123.234" }, { ...option, type: Dummy, })
         expect(result.issues).toMatchObject([{ path: "property", messages: ["Invalid white listed"] }])
+    })
+
+    it("Should not error if provided string validator", () => {
+        @reflect.parameterProperties()
+        class Dummy {
+            constructor(
+                @createValidation("hola")
+                public property: string
+            ) { }
+        }
+        const result = convert({ property: "abc123.234" }, { ...option, type: Dummy, })
+        expect(result.issues).toBeUndefined()
     })
 })
