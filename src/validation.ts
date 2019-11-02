@@ -53,7 +53,7 @@ function isEmpty(result: Result) {
 function requiredValidationVisitor(i: VisitorInvocation): Result {
     const result = i.proceed()
     if (isEmpty(result) && !isOptional(i) && !isPartial(i))
-        return Result.error(i.path, `Required`)
+        return Result.error(i.value, i.path, `Required`)
     else
         return result;
 }
@@ -77,7 +77,7 @@ function validatorVisitor(i: VisitorInvocation): Result {
                 if (msg) messages.push(msg)
             }
         }
-        return messages.length > 0 ? Result.error(i.path, messages) : result
+        return messages.length > 0 ? Result.error(i.value, i.path, messages) : result
     }
 }
 

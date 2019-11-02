@@ -382,7 +382,7 @@ Object {
       "path": "",
     },
   ],
-  "value": undefined,
+  "value": "12",
 }
 `;
 
@@ -403,6 +403,8 @@ Object {
     },
   ],
   "value": AnimalClass {
+    "age": "12",
+    "id": "12",
     "name": "Mimi",
   },
 }
@@ -425,11 +427,15 @@ Object {
     },
   ],
   "value": Array [
-    Tag {},
+    Tag {
+      "age": "12",
+    },
     Tag {
       "age": 40,
     },
-    Tag {},
+    Tag {
+      "age": "12",
+    },
   ],
 }
 `;
@@ -451,8 +457,11 @@ Object {
     },
   ],
   "value": AnimalClass {
+    "id": "12",
     "name": "Mimi",
-    "tag": Tag {},
+    "tag": Tag {
+      "age": "12",
+    },
   },
 }
 `;

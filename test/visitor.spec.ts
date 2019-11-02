@@ -17,13 +17,13 @@ describe("Visitor", () => {
 
     const olderThanEightTeen = (i: VisitorInvocation) => {
         if (i.type === Number && i.value < 18)
-            return Result.error(i.path, "Must be older than 18")
+            return Result.error(i.value, i.path, "Must be older than 18")
         else
             return i.proceed()
     }
 
     it("Should be able to create result of multiple messages", () => {
-        const result = Result.error("path", ["Hello", "world"])
+        const result = Result.error(undefined, "path", ["Hello", "world"])
         expect(result).toMatchSnapshot()
     })
 
