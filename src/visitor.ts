@@ -37,8 +37,8 @@ namespace Result {
     export function create(value: any): Result {
         return { value }
     }
-    export function error(path: string, message: string | string[]): Result {
-        return { value: undefined, issues: [{ path, messages: Array.isArray(message) ? message : [message] }] }
+    export function error(value: any, path: string, message: string | string[]): Result {
+        return { value, issues: [{ path, messages: Array.isArray(message) ? message : [message] }] }
     }
 }
 
@@ -68,14 +68,14 @@ function unableToConvert(value: {}, type: string) {
 function primitiveVisitor(value: {}, ast: PrimitiveNode, opt: VisitorOption): Result {
     const result = ast.converter(value)
     if (result === undefined)
-        return Result.error(opt.path, unableToConvert(value, ast.type.name))
+        return Result.error(value, opt.path, unableToConvert(value, ast.type.name))
     else
         return Result.create(result)
 }
 
 function arrayVisitor(value: {}[], ast: ArrayNode, opt: VisitorOption): Result {
     const newValues = opt.guessArrayElement && !Array.isArray(value) ? [value] : value
-    if (!Array.isArray(newValues)) return Result.error(opt.path, unableToConvert(value, `Array<${ast.type.name}>`))
+    if (!Array.isArray(newValues)) return Result.error(value, opt.path, unableToConvert(value, `Array<${ast.type.name}>`))
     const result: any[] = []
     const errors: ResultMessages[] = []
     for (let i = 0; i < newValues.length; i++) {
@@ -95,7 +95,7 @@ function arrayVisitor(value: {}[], ast: ArrayNode, opt: VisitorOption): Result {
 
 function objectVisitor(value: any, ast: ObjectNode, opt: VisitorOption): Result {
     if (typeof value === "number" || typeof value === "string" || typeof value === "boolean")
-        return Result.error(opt.path, unableToConvert(value, ast.type.name))
+        return Result.error(value, opt.path, unableToConvert(value, ast.type.name))
     const instance = Object.create(ast.type.prototype)
     const meta = reflect(ast.type)
     const errors: ResultMessages[] = []

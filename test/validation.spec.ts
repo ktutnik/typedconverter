@@ -62,6 +62,13 @@ describe("Optional & Partial Validation", () => {
             })
             expect(result).toMatchSnapshot()
         })
+        it("Should give proper info if provided wrong type of value", () =>{
+            const result = validate("hula", {
+                path: "data",
+                type: Number,
+            })
+            expect(result).toMatchSnapshot()
+        })
         it("Should valid if optional", () => {
             const result = validate(null, {
                 decorators: [<ValidatorDecorator>{ type: "tc:validator", validator: OptionalValidator }],

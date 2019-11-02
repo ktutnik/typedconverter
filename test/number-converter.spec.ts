@@ -28,9 +28,9 @@ describe("Number Converter", () => {
         const result = convert(undefined)
         expect(result.value).toBeUndefined()
     })
-    it("Should return undefined if provided empty string", () => {
+    it("Should validate if provided empty string", () => {
         const result = convert("")
-        expect(result.value).toBeUndefined()
+        expect(result.issues).toEqual([{ path: "", messages: [`Unable to convert "" into Number`] }])
     })
     it("Should not convert string", () => {
         const result = convert("Hello")

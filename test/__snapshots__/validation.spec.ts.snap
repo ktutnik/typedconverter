@@ -91,7 +91,7 @@ Object {
   ],
   "value": Array [
     1,
-    undefined,
+    null,
     3,
   ],
 }
@@ -364,6 +364,7 @@ Object {
     "birthday": 2018-02-02,
     "deceased": true,
     "id": 200,
+    "name": "",
   },
 }
 `;
@@ -436,6 +437,20 @@ Object {
 }
 `;
 
+exports[`Optional & Partial Validation Primitive Type Validation Should give proper info if provided wrong type of value 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Unable to convert \\"hula\\" into Number",
+      ],
+      "path": "data",
+    },
+  ],
+  "value": "hula",
+}
+`;
+
 exports[`Optional & Partial Validation Primitive Type Validation Should valid if optional 1`] = `
 Object {
   "value": null,
@@ -452,7 +467,7 @@ Object {
       "path": "data",
     },
   ],
-  "value": undefined,
+  "value": null,
 }
 `;
 
