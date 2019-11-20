@@ -47,10 +47,15 @@ function dateConverter(rawValue: {}) {
     return isNaN(stamp) ? undefined : new Date(stamp)
 }
 
+function stringConverter(rawValue: {}) {
+    return safeToString(rawValue)
+}
+
 const defaultConverters = new Map<Class, Converter>([
     [Boolean, booleanConverter],
     [Date, dateConverter],
-    [Number, numberConverter]
+    [Number, numberConverter],
+    [String, stringConverter]
 ])
 
 export { defaultConverters, Converter, safeToString }
