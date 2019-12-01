@@ -1,6 +1,6 @@
 {
   "name": "typedconverter",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Convert object into classes match with TypeScript type annotation",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
