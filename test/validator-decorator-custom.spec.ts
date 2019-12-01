@@ -428,7 +428,7 @@ describe("Validator Decorator Tests", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.matches({ message: "Lorem ipsum dolor", pattern: /^[a-z0-9 ]+$/i })
+                @val.matches({ message: "Lorem ipsum dolor", pattern: "^[a-z0-9 ]+$" })
                 public property: string
             ) { }
         }
@@ -524,7 +524,7 @@ describe("Validator Decorator Tests", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.postalCode({ message: "Lorem ipsum dolor", locale: "any" })
+                @val.postalCode({ message: "Lorem ipsum dolor", locale: "ID" })
                 public property: string
             ) { }
         }

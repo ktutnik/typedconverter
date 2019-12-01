@@ -429,7 +429,7 @@ describe("Validator Decorator Tests", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.matches({ pattern: /^[a-z0-9 ]+$/i })
+                @val.matches({ pattern: "^[a-z0-9 ]+$" })
                 public property: string
             ) { }
         }
@@ -525,7 +525,7 @@ describe("Validator Decorator Tests", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.postalCode({ locale: "any" })
+                @val.postalCode({ locale: "ID" })
                 public property: string
             ) { }
         }
