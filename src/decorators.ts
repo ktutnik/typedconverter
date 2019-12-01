@@ -13,11 +13,11 @@ namespace val {
         return check(x => validatorJs.isAfter(x, opt && opt.date), opt && opt.message || `Date must be greater than ${opt && opt.date || "today"}`)
     }
 
-    export function alpha(opt?: Opt & { locale?: ValidatorJS.AlphaLocale }) {
+    export function alpha(opt?: Opt & { locale?: validatorJs.AlphaLocale }) {
         return check(x => validatorJs.isAlpha(x, opt && opt.locale), opt && opt.message || "Invalid alpha")
     }
 
-    export function alphanumeric(opt?: Opt & { locale?: ValidatorJS.AlphaLocale }) {
+    export function alphanumeric(opt?: Opt & { locale?: validatorJs.AlphaLocale }) {
         return check(x => validatorJs.isAlphanumeric(x, opt && opt.locale), opt && opt.message || "Invalid alpha numeric")
     }
 
@@ -33,7 +33,7 @@ namespace val {
         return check(x => validatorJs.isBefore(x, opt && opt.date), opt && opt.message || `Date must be less than ${opt && opt.date || "today"}`)
     }
 
-    export function byteLength(opt: Opt & ValidatorJS.IsByteLengthOptions) {
+    export function byteLength(opt: Opt & validatorJs.IsByteLengthOptions) {
         return check(x => validatorJs.isByteLength(x, opt), opt && opt.message || "Invalid byte length")
     }
 
@@ -41,7 +41,7 @@ namespace val {
         return check(x => validatorJs.isCreditCard(x), opt && opt.message || "Invalid credit card number")
     }
 
-    export function currency(opt?: Opt & ValidatorJS.IsCurrencyOptions) {
+    export function currency(opt?: Opt & validatorJs.IsCurrencyOptions) {
         return check(x => validatorJs.isCurrency(x, opt), opt && opt.message || "Invalid currency")
     }
 
@@ -49,7 +49,7 @@ namespace val {
         return check(x => validatorJs.isDataURI(x), opt && opt.message || "Invalid data URI")
     }
 
-    export function decimal(opt?: Opt & ValidatorJS.IsDecimalOptions) {
+    export function decimal(opt?: Opt & validatorJs.IsDecimalOptions) {
         return check(x => validatorJs.isDecimal(x, opt), opt && opt.message || "Invalid decimal")
     }
 
@@ -57,15 +57,15 @@ namespace val {
         return check(x => validatorJs.isDivisibleBy(x, opt.num), opt && opt.message || `Not divisible by ${opt.num}`)
     }
 
-    export function email(opt?: Opt & ValidatorJS.IsEmailOptions) {
+    export function email(opt?: Opt & validatorJs.IsEmailOptions) {
         return check(x => validatorJs.isEmail(x, opt), opt && opt.message || "Invalid email address")
     }
 
-    export function fqdn(opt?: Opt & ValidatorJS.IsFQDNOptions) {
+    export function fqdn(opt?: Opt & validatorJs.IsFQDNOptions) {
         return check(x => validatorJs.isFQDN(x, opt), opt && opt.message || "Invalid FQDN")
     }
 
-    export function float(opt?: Opt & ValidatorJS.IsFloatOptions) {
+    export function float(opt?: Opt & validatorJs.IsFloatOptions) {
         return check(x => validatorJs.isFloat(x, opt), opt && opt.message || "Invalid float number")
     }
 
@@ -77,7 +77,7 @@ namespace val {
         return check(x => validatorJs.isHalfWidth(x), opt && opt.message || "Invalid value provided")
     }
 
-    export function hash(opt: Opt & { algorithm: ValidatorJS.HashAlgorithm }) {
+    export function hash(opt: Opt & { algorithm: validatorJs.HashAlgorithm }) {
         return check(x => validatorJs.isHash(x, opt.algorithm), opt && opt.message || "Invalid hash")
     }
 
@@ -89,11 +89,11 @@ namespace val {
         return check(x => validatorJs.isHexadecimal(x), opt && opt.message || "Invalid hexadecimal")
     }
 
-    export function ip(opt?: Opt & { version?: number }) {
+    export function ip(opt?: Opt & { version?: "4" | "6" }) {
         return check(x => validatorJs.isIP(x, opt && opt.version), opt && opt.message || "Invalid IP address")
     }
 
-    export function isbn(opt?: Opt & { version?: number }) {
+    export function isbn(opt?: Opt & { version?: "10" | "13" }) {
         return check(x => validatorJs.isISBN(x, opt && opt.version), opt && opt.message || "Invalid ISBN")
     }
 
@@ -113,11 +113,11 @@ namespace val {
         return check(x => validatorJs.isISRC(x), opt && opt.message || "Invalid ISRC")
     }
 
-    export function issn(opt?: Opt & ValidatorJS.IsISSNOptions) {
+    export function issn(opt?: Opt & validatorJs.IsISSNOptions) {
         return check(x => validatorJs.isISSN(x, opt), opt && opt.message || "Invalid ISSN")
     }
 
-    export function int(opt?: Opt & ValidatorJS.IsIntOptions) {
+    export function int(opt?: Opt & validatorJs.IsIntOptions) {
         return check(x => validatorJs.isInt(x, opt), opt && opt.message || "Invalid integer")
     }
 
@@ -129,7 +129,7 @@ namespace val {
         return check(x => validatorJs.isLatLong(x), opt && opt.message || "Invalid lat long")
     }
 
-    export function length(opt: Opt & ValidatorJS.IsLengthOptions) {
+    export function length(opt: Opt & validatorJs.IsLengthOptions) {
         return check(x => validatorJs.isLength(x, opt), opt && opt.message || "Invalid length")
     }
 
@@ -141,7 +141,7 @@ namespace val {
         return check(x => validatorJs.isMACAddress(x), opt && opt.message || "Invalid MAC address")
     }
 
-    export function matches(opt: Opt & { pattern: string | RegExp, modifier?: string }) {
+    export function matches(opt: Opt & { pattern: string, modifier?: string }) {
         return check(x => validatorJs.matches(x, opt.pattern, opt.modifier), opt.message || "Invalid string")
     }
 
@@ -153,7 +153,7 @@ namespace val {
         return check(x => validatorJs.isMimeType(x), opt && opt.message || "Invalid mime type")
     }
 
-    export function mobilePhone(opt: Opt & { locale: ValidatorJS.MobilePhoneLocale, options?: ValidatorJS.IsMobilePhoneOptions }) {
+    export function mobilePhone(opt: Opt & { locale: validatorJs.MobilePhoneLocale, options?: validatorJs.IsMobilePhoneOptions }) {
         return check(x => validatorJs.isMobilePhone(x, opt.locale, opt && opt.options), opt && opt.message || "Invalid mobile phone")
     }
 
@@ -173,7 +173,7 @@ namespace val {
         return check(x => validatorJs.isPort(x), opt && opt.message || "Invalid port")
     }
 
-    export function postalCode(opt: Opt & { locale: ValidatorJS.PostalCodeLocale }) {
+    export function postalCode(opt: Opt & { locale: validatorJs.PostalCodeLocale }) {
         return check(x => validatorJs.isPostalCode(x, opt.locale), opt && opt.message || "Invalid postal code")
     }
 
@@ -181,7 +181,7 @@ namespace val {
         return check(x => validatorJs.isSurrogatePair(x), opt && opt.message || "Invalid surrogate pair")
     }
 
-    export function url(opt?: Opt & ValidatorJS.IsURLOptions) {
+    export function url(opt?: Opt & validatorJs.IsURLOptions) {
         return check(x => validatorJs.isURL(x, opt), opt && opt.message || "Invalid url")
     }
 
@@ -211,4 +211,4 @@ namespace val {
 }
 
 
-export {val, Opt}
+export { val, Opt }
