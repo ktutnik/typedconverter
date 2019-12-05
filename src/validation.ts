@@ -4,7 +4,7 @@ import { Result } from './visitor';
 import { Class } from './types';
 import { safeToString } from './converter';
 
-const OptionalValidator = Symbol("tc:optional")
+const RequiredValidator = Symbol("tc:required")
 const PartialValidator = Symbol("tc:partial")
 type Validator = (val: any) => string | undefined
 interface ValidatorDecorator { type: "tc:validator", validator: Validator | string | symbol }
@@ -17,8 +17,8 @@ function createValidation(validator: Validator | string | symbol) {
     return decorateProperty(<ValidatorDecorator>{ type: "tc:validator", validator })
 }
 
-function optional() {
-    return createValidation(OptionalValidator)
+function required() {
+    return createValidation(RequiredValidator)
 }
 
 function partial(type: Class) {
@@ -29,10 +29,6 @@ function partial(type: Class) {
 // --------------------------------------------------------------------- //
 // ------------------------------ HELPERS ------------------------------ //
 // --------------------------------------------------------------------- //
-
-function isOptional(i: VisitorInvocation) {
-    return i.decorators.find((x: ValidatorDecorator) => x.validator === OptionalValidator)
-}
 
 function isPartial(i: VisitorInvocation) {
     return i.parent && i.parent.decorators.find((x: ValidatorDecorator) => x.validator === PartialValidator)
@@ -46,28 +42,16 @@ function isEmpty(result: Result) {
 // ------------------------------ VISITORS ----------------------------- //
 // --------------------------------------------------------------------- //
 
-/**
- * When registered to the converter, this visitor will make all variable or properties required by default, except optional decorator added
- * @param i Visitor invocation
- */
-function requiredValidationVisitor(i: VisitorInvocation): Result {
-    const result = i.proceed()
-    if (isEmpty(result) && !isOptional(i) && !isPartial(i))
-        return Result.error(i.value, i.path, `Required`)
-    else
-        return result;
-}
-
 function getValidators(i: VisitorInvocation): ValidatorDecorator[] {
     return i.decorators
-        .filter((x: ValidatorDecorator) => x.validator !== OptionalValidator
-            && x.validator !== PartialValidator && x.type === "tc:validator")
+        .filter((x: ValidatorDecorator) => x.validator !== PartialValidator && x.type === "tc:validator")
 }
 
 function validatorVisitor(i: VisitorInvocation): Result {
     const validators = getValidators(i)
     const result = i.proceed()
-    //if empty then don't do any more validation
+    if (!isPartial(i) && isEmpty(result) && validators.some(x => x.validator === RequiredValidator))
+        return Result.error(i.value, i.path, "Required")
     if (isEmpty(result) || validators.length === 0) return result
     else {
         const messages: string[] = []
@@ -81,4 +65,8 @@ function validatorVisitor(i: VisitorInvocation): Result {
     }
 }
 
-export { createValidation, optional, partial, requiredValidationVisitor, validatorVisitor, Validator, ValidatorDecorator, OptionalValidator, PartialValidator }
+export {
+    createValidation, required, partial,
+    validatorVisitor, Validator, ValidatorDecorator,
+    PartialValidator, RequiredValidator
+}

@@ -1,7 +1,6 @@
 import reflect, { decorateMethod } from "tinspector"
 
 import {
-    OptionalValidator,
     PartialValidator,
     val,
     validate,
@@ -9,18 +8,21 @@ import {
     VisitorInvocation,
     Result,
 } from "../src"
+import { RequiredValidator } from '../src/validation'
+
+const required = <ValidatorDecorator>{ type: "tc:validator", validator: RequiredValidator }
 
 
 describe("Optional & Partial Validation", () => {
     describe("Decorators", () => {
-        it("Should able to decorate optional validator", () => {
+        it("Should able to decorate required validator", () => {
             @reflect.parameterProperties()
             class AnimalClass {
                 constructor(
                     public id: number,
                     public name: string,
                     public deceased: boolean,
-                    @val.optional()
+                    @val.required()
                     public birthday: Date
                 ) { }
             }
@@ -48,30 +50,55 @@ describe("Optional & Partial Validation", () => {
 
     describe("Primitive Type Validation", () => {
 
-        it("Should validate undefined", () => {
+        it("Should validate undefined if required", () => {
             const result = validate(undefined, {
                 path: "data",
-                type: Number
+                type: Number,
+                decorators: [required]
             })
             expect(result).toMatchSnapshot()
         })
-        it("Should validate null", () => {
+        it("Should validate null if required", () => {
             const result = validate(null, {
                 path: "data",
                 type: Number,
+                decorators: [required]
             })
             expect(result).toMatchSnapshot()
         })
-        it("Should give proper info if provided wrong type of value", () =>{
+        it("Should validate empty string if required", () => {
+            const result = validate("", {
+                path: "data",
+                type: Number,
+                decorators: [required]
+            })
+            expect(result).toMatchSnapshot()
+        })
+        it("Should give proper info if provided wrong type of value", () => {
             const result = validate("hula", {
                 path: "data",
                 type: Number,
             })
             expect(result).toMatchSnapshot()
         })
-        it("Should valid if optional", () => {
+        it("Should valid if not required and provided null", () => {
             const result = validate(null, {
-                decorators: [<ValidatorDecorator>{ type: "tc:validator", validator: OptionalValidator }],
+                path: "data",
+                type: Number,
+            })
+            expect(result).toMatchSnapshot()
+        })
+
+        it("Should valid if not required and provided undefined", () => {
+            const result = validate(undefined, {
+                path: "data",
+                type: Number,
+            })
+            expect(result).toMatchSnapshot()
+        })
+
+        it("Should valid if not required and provided empty string", () => {
+            const result = validate("", {
                 path: "data",
                 type: Number,
             })
@@ -83,61 +110,70 @@ describe("Optional & Partial Validation", () => {
         @reflect.parameterProperties()
         class AnimalClass {
             constructor(
+                @val.required()
                 public id: number,
                 public name: string,
                 public deceased: boolean,
-                @val.optional()
                 public birthday: Date
             ) { }
         }
 
         const option = { type: AnimalClass, }
 
-        it("Should validate undefined property", () => {
+        it("Should validate undefined property if required", () => {
             const result = validate({ id: undefined, name: "Mimi", deceased: "ON", birthday: "2018-2-2" }, { ...option })
             expect(result).toMatchSnapshot()
         })
 
-        it("Should validate null property", () => {
+        it("Should validate null property if required", () => {
             const result = validate({ id: null, name: "Mimi", deceased: "ON", birthday: "2018-2-2" }, { ...option })
             expect(result).toMatchSnapshot()
         })
 
         it("Should validate empty string property", () => {
-            const result = validate({ id: "200", name: "", deceased: "ON", birthday: "2018-2-2" }, { ...option })
+            const result = validate({ id: "", name: "", deceased: "ON", birthday: "2018-2-2" }, { ...option })
             expect(result).toMatchSnapshot()
         })
 
-        it("Should valid if provided null optional", () => {
-            const result = validate({ id: "123", name: "Mimi", deceased: "ON", birthday: null }, { ...option })
+        it("Should valid if provided null if not required", () => {
+            const result = validate({ id: "123", name: null, deceased: null, birthday: null }, { ...option })
             expect(result).toMatchSnapshot()
         })
 
-        it("Should valid if provided undefined optional", () => {
-            const result = validate({ id: "123", name: "Mimi", deceased: "ON", birthday: undefined }, { ...option })
+        it("Should valid if provided undefined if not required", () => {
+            const result = validate({ id: "123" }, { ...option })
             expect(result).toMatchSnapshot()
         })
     })
 
     describe("Array of Primitive Type Validation", () => {
 
-        it("Should validate undefined", () => {
+        it("Should validate undefined if required", () => {
             const result = validate(["1", undefined, "3"], {
                 path: "data",
                 type: [Number],
+                decorators: [required]
             })
             expect(result).toMatchSnapshot()
         })
-        it("Should validate null", () => {
+        it("Should validate null if required", () => {
             const result = validate(["1", null, "3"], {
                 path: "data",
                 type: [Number],
+                decorators: [required]
             })
             expect(result).toMatchSnapshot()
         })
-        it("Should valid if optional", () => {
+        it("Should validate empty string if required", () => {
+            const result = validate(["1", "", "3"], {
+                path: "data",
+                type: [Number],
+                decorators: [required]
+            })
+            expect(result).toMatchSnapshot()
+        })
+        it("Should valid if not required", () => {
             const result = validate(["1", null, "3"], {
-                decorators: [<ValidatorDecorator>{ type: "tc:validator", validator: OptionalValidator }],
                 path: "data",
                 type: [Number],
             })
@@ -149,28 +185,33 @@ describe("Optional & Partial Validation", () => {
         @reflect.parameterProperties()
         class AnimalClass {
             constructor(
+                @val.required()
                 public id: number,
                 public name: string,
                 public deceased: boolean,
-                @val.optional()
                 public birthday: Date
             ) { }
         }
 
         const option = { type: [AnimalClass], }
 
-        it("Should validate undefined property", () => {
+        it("Should validate undefined property if required", () => {
             const result = validate([undefined, { id: undefined, name: "Mimi", deceased: "ON", birthday: "2018-2-2" }], { ...option })
             expect(result).toMatchSnapshot()
         })
 
-        it("Should validate null property", () => {
+        it("Should validate null property if required", () => {
             const result = validate([undefined, { id: null, name: "Mimi", deceased: "ON", birthday: "2018-2-2" }], { ...option })
             expect(result).toMatchSnapshot()
         })
 
-        it("Should valid if optional", () => {
-            const result = validate([undefined, { id: "123", name: "Mimi", deceased: "ON", birthday: null }], { ...option, decorators: [<ValidatorDecorator>{ type: "tc:validator", validator: OptionalValidator }] })
+        it("Should validate empty string property if required", () => {
+            const result = validate([undefined, { id: "", name: "Mimi", deceased: "ON", birthday: "2018-2-2" }], { ...option })
+            expect(result).toMatchSnapshot()
+        })
+
+        it("Should valid if not required", () => {
+            const result = validate([undefined, { id: "123" }], { ...option })
             expect(result).toMatchSnapshot()
         })
     })
@@ -179,8 +220,8 @@ describe("Optional & Partial Validation", () => {
         @reflect.parameterProperties()
         class TagClass {
             constructor(
+                @val.required()
                 public id: number,
-                @val.optional()
                 public name: string
             ) { }
         }
@@ -198,34 +239,41 @@ describe("Optional & Partial Validation", () => {
 
         const option = { type: AnimalClass, }
 
-        it("Should validate undefined property", () => {
+        it("Should validate undefined property if required", () => {
             const result = validate({ id: "123", name: "Mimi", deceased: "ON", birthday: "2018-2-2", tag: { id: undefined, name: "The Tag" } }, { ...option })
             expect(result).toMatchSnapshot()
         })
 
-        it("Should validate null property", () => {
+        it("Should validate null property if required", () => {
             const result = validate({ id: "123", name: "Mimi", deceased: "ON", birthday: "2018-2-2", tag: { id: null, name: "The Tag" } }, { ...option })
             expect(result).toMatchSnapshot()
         })
 
-        it("Should valid if provided null optional", () => {
+        it("Should validate empty string property if required", () => {
+            const result = validate({ id: "123", name: "Mimi", deceased: "ON", birthday: "2018-2-2", tag: { id: "", name: "The Tag" } }, { ...option })
+            expect(result).toMatchSnapshot()
+        })
+
+        it("Should valid if provided null not required", () => {
             const result = validate({ id: "123", name: "Mimi", deceased: "ON", birthday: "2018-2-2", tag: { id: "123", name: null } }, { ...option })
             expect(result).toMatchSnapshot()
         })
 
-        it("Should valid if provided undefined optional", () => {
-            const result = validate({ id: "123", name: "Mimi", deceased: "ON", birthday: "2018-2-2", tag: { id: "123", name: undefined } }, { ...option })
+        it("Should valid if provided undefined not required", () => {
+            const result = validate({ id: "123", tag: { id: "123", name: undefined } }, { ...option })
             expect(result).toMatchSnapshot()
         })
     })
 
     describe("Partial Validation", () => {
-        it("Should pass empty field if parent marked with partial", () => {
+
+        it("Should skip required validator on partial parent", () => {
             @reflect.parameterProperties()
             class AnimalClass {
                 constructor(
                     public id: number,
                     public name: string,
+                    @val.required()
                     public deceased: boolean,
                     public birthday: Date
                 ) { }
@@ -238,26 +286,7 @@ describe("Optional & Partial Validation", () => {
             expect(result).toMatchSnapshot()
         })
 
-        it("Should skip optional validator on partial parent", () => {
-            @reflect.parameterProperties()
-            class AnimalClass {
-                constructor(
-                    public id: number,
-                    public name: string,
-                    @val.optional()
-                    public deceased: boolean,
-                    public birthday: Date
-                ) { }
-            }
-            const result = validate({ id: "123" }, {
-                decorators: [<ValidatorDecorator>{ type: "tc:validator", validator: PartialValidator }],
-                path: "data",
-                type: AnimalClass,
-            })
-            expect(result).toMatchSnapshot()
-        })
-
-        it("Should validate whole object even its partial and provided undefined", () => {
+        it("Should able to combined with required", () => {
             @reflect.parameterProperties()
             class AnimalClass {
                 constructor(
@@ -268,7 +297,7 @@ describe("Optional & Partial Validation", () => {
                 ) { }
             }
             const result = validate(undefined, {
-                decorators: [<ValidatorDecorator>{ type: "tc:validator", validator: PartialValidator }],
+                decorators: [<ValidatorDecorator>{ type: "tc:validator", validator: PartialValidator }, required],
                 path: "data",
                 type: AnimalClass,
             })
@@ -291,36 +320,11 @@ describe("Validator", () => {
         expect(result).toMatchObject({ value: { property: "lorem.ipsum@gmail.com" } })
     })
 
-    it("Should prioritize Required validator than other validator", () => {
-        @reflect.parameterProperties()
-        class Dummy {
-            constructor(
-                @val.email()
-                public property: string
-            ) { }
-        }
-        const result = validate({ property: "" }, { type: Dummy, })
-        expect(result.issues).toMatchObject([{ path: "property", messages: ["Required"] }])
-    })
 
-    it("Should able combine optional and email", () => {
+    it("Should return message if provided invalid value", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.optional()
-                @val.email()
-                public property: string
-            ) { }
-        }
-        const result = validate({ property: undefined }, { type: Dummy, })
-        expect(result).toMatchObject({ value: {}, issues: undefined })
-    })
-
-    it("Should able combine optional and invalid email", () => {
-        @reflect.parameterProperties()
-        class Dummy {
-            constructor(
-                @val.optional()
                 @val.email()
                 public property: string
             ) { }
@@ -329,17 +333,29 @@ describe("Validator", () => {
         expect(result).toMatchObject({ issues: [{ messages: ["Invalid email address"], path: "property" }] })
     })
 
-    it("Should able combine optional and valid email", () => {
+    it("Should prioritize Required validator than other validator", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.optional()
+                @val.required()
                 @val.email()
                 public property: string
             ) { }
         }
-        const result = validate({ property: "lorem.ipsum@gmail.com" }, { type: Dummy, })
-        expect(result).toMatchObject({ value: { property: "lorem.ipsum@gmail.com" } })
+        const result = validate({ property: "" }, { type: Dummy, })
+        expect(result.issues).toMatchObject([{ path: "property", messages: ["Required"] }])
+    })
+
+    it("Should valid if not required", () => {
+        @reflect.parameterProperties()
+        class Dummy {
+            constructor(
+                @val.email()
+                public property: string
+            ) { }
+        }
+        const result = validate({ property: undefined }, { type: Dummy, })
+        expect(result).toMatchObject({ value: {}, issues: undefined })
     })
 
     it("Should able to add custom visitor", () => {
@@ -350,7 +366,6 @@ describe("Validator", () => {
         @reflect.parameterProperties()
         class Dummy {
             constructor(
-                @val.optional()
                 @val.email()
                 public property: string
             ) { }

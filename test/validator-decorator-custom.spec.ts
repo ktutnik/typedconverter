@@ -1,7 +1,7 @@
-import { convert, requiredValidationVisitor, val, validatorVisitor } from "../src"
+import { convert, val, validatorVisitor } from "../src"
 import reflect from 'tinspector';
 
-const option = { visitors: [requiredValidationVisitor, validatorVisitor] }
+const option = { visitors: [validatorVisitor] }
 
 describe("Validator Decorator Tests", () => {
     test("after", () => {
