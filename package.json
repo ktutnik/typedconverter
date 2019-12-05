@@ -24,7 +24,7 @@
     "validator": "^12.1.0"
   },
   "devDependencies": {
-    "@types/ejs": "^2.7.0",
+    "@types/ejs": "^3.0.0",
     "@types/jest": "^24.0.23",
     "@types/joi": "^14.3.4",
     "coveralls": "^3.0.9",
