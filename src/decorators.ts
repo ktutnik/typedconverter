@@ -201,8 +201,8 @@ namespace val {
         return check(x => validatorJs.isWhitelisted(x, opt && opt.chars), opt && opt.message || "Invalid white listed")
     }
 
-    export function optional() {
-        return v.optional()
+    export function required() {
+        return v.required()
     }
 
     export function partial(typ: Class) {
