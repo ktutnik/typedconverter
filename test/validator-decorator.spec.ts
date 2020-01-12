@@ -473,6 +473,18 @@ describe("Validator Decorator Tests", () => {
         expect(result.issues).toMatchObject([{ path: "property", messages: ["Invalid mobile phone"] }])
     })
 
+    test("mobilePhone", () => {
+        @reflect.parameterProperties()
+        class Dummy {
+            constructor(
+                @val.mobilePhone()
+                public property: string
+            ) { }
+        }
+        const result = convert({ property: "abc123-234" }, { ...option, type: Dummy, })
+        expect(result.issues).toMatchObject([{ path: "property", messages: ["Invalid mobile phone"] }])
+    })
+
     test("mongoId", () => {
         @reflect.parameterProperties()
         class Dummy {
@@ -526,6 +538,18 @@ describe("Validator Decorator Tests", () => {
         class Dummy {
             constructor(
                 @val.postalCode({ locale: "ID" })
+                public property: string
+            ) { }
+        }
+        const result = convert({ property: "abc123-234" }, { ...option, type: Dummy, })
+        expect(result.issues).toMatchObject([{ path: "property", messages: ["Invalid postal code"] }])
+    })
+
+    test("postalCode", () => {
+        @reflect.parameterProperties()
+        class Dummy {
+            constructor(
+                @val.postalCode()
                 public property: string
             ) { }
         }
