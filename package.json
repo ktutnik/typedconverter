@@ -25,15 +25,15 @@
   },
   "devDependencies": {
     "@types/ejs": "^3.0.0",
-    "@types/jest": "^24.0.23",
+    "@types/jest": "^24.0.25",
     "@types/joi": "^14.3.4",
     "coveralls": "^3.0.9",
     "ejs": "^3.0.1",
     "jest": "^24.9.0",
     "joi": "^14.3.1",
-    "ts-jest": "^24.2.0",
-    "ts-node": "^8.5.4",
-    "typescript": "^3.7.3"
+    "ts-jest": "^24.3.0",
+    "ts-node": "^8.6.1",
+    "typescript": "^3.7.4"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"
