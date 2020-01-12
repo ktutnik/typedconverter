@@ -153,7 +153,7 @@ namespace val {
         return check(x => validatorJs.isMimeType(x), opt && opt.message || "Invalid mime type")
     }
 
-    export function mobilePhone(opt: Opt & { locale: validatorJs.MobilePhoneLocale, options?: validatorJs.IsMobilePhoneOptions }) {
+    export function mobilePhone(opt: Opt & { locale?: validatorJs.MobilePhoneLocale, options?: validatorJs.IsMobilePhoneOptions }) {
         return check(x => validatorJs.isMobilePhone(x, opt.locale, opt && opt.options), opt && opt.message || "Invalid mobile phone")
     }
 
@@ -173,8 +173,8 @@ namespace val {
         return check(x => validatorJs.isPort(x), opt && opt.message || "Invalid port")
     }
 
-    export function postalCode(opt: Opt & { locale: validatorJs.PostalCodeLocale }) {
-        return check(x => validatorJs.isPostalCode(x, opt.locale), opt && opt.message || "Invalid postal code")
+    export function postalCode(opt: Opt & { locale?: validatorJs.PostalCodeLocale }) {
+        return check(x => validatorJs.isPostalCode(x, opt.locale || "any"), opt && opt.message || "Invalid postal code")
     }
 
     export function surrogatePair(opt?: Opt) {
