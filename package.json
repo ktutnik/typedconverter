@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@types/ejs": "^3.0.0",
-    "@types/jest": "^24.0.25",
+    "@types/jest": "^25.1.0",
     "@types/joi": "^14.3.4",
     "coveralls": "^3.0.9",
     "ejs": "^3.0.1",
