@@ -129,7 +129,7 @@ describe("Guess Array Element", () => {
         expect(b.value).toEqual(["1234"])
     })
 
-    it.only("Should work for array on nested Object without type override", () => {
+    it("Should work for array on nested Object without type override", () => {
         @reflect.parameterProperties()
         class TagModel {
             constructor(
