@@ -22,3 +22,14 @@ Array [
   },
 ]
 `;
+
+exports[`Guess Array Element Should work for array on nested Object without type override 1`] = `
+AnimalClass {
+  "tags": Array [
+    Object {
+      "id": "123",
+      "name": "lorem",
+    },
+  ],
+}
+`;

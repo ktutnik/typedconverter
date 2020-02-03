@@ -128,4 +128,22 @@ describe("Guess Array Element", () => {
         const b = convert("1234", { type: [Object], guessArrayElement: true })
         expect(b.value).toEqual(["1234"])
     })
+
+    it.only("Should work for array on nested Object without type override", () => {
+        @reflect.parameterProperties()
+        class TagModel {
+            constructor(
+                public id: number,
+                public name: string,
+            ) { }
+        }
+        @reflect.parameterProperties()
+        class AnimalClass {
+            constructor(
+                public tags: TagModel[] // <-- no type override
+            ) { }
+        }
+        const b = convert({ tags: { id: "123", name: "lorem" } }, { type: AnimalClass, guessArrayElement: true })
+        expect(b.value).toMatchSnapshot()
+    })
 })
