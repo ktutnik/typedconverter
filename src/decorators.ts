@@ -165,7 +165,7 @@ namespace val {
         return check(x => validatorJs.isMultibyte(x), opt && opt.message || "Invalid multi byte")
     }
 
-    export function numeric(opt?: Opt) {
+    export function numeric(opt?: Opt & validatorJs.IsNumericOptions) {
         return check(x => validatorJs.isNumeric(x), opt && opt.message || "Invalid numeric")
     }
 
@@ -175,6 +175,10 @@ namespace val {
 
     export function postalCode(opt?: Opt & { locale?: validatorJs.PostalCodeLocale }) {
         return check(x => validatorJs.isPostalCode(x, opt && opt.locale || "any"), opt && opt.message || "Invalid postal code")
+    }
+
+    export function slug(opt?: Opt) {
+        return check(x => validatorJs.isSlug(x), opt && opt.message || "Invalid slug")
     }
 
     export function surrogatePair(opt?: Opt) {
