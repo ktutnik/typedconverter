@@ -532,6 +532,18 @@ describe("Validator Decorator Tests", () => {
         expect(result.issues).toMatchObject([{ path: "property", messages: ["Lorem ipsum dolor"] }])
     })
 
+    test("slug", () => {
+        @reflect.parameterProperties()
+        class Dummy {
+            constructor(
+                @val.slug({message: "Lorem ipsum"})
+                public property: string
+            ) { }
+        }
+        const result = convert({ property: "-not-slug" }, { ...option, type: Dummy, })
+        expect(result.issues).toMatchObject([{ path: "property", messages: ["Lorem ipsum"] }])
+    })
+
     test("surrogatePair", () => {
         @reflect.parameterProperties()
         class Dummy {

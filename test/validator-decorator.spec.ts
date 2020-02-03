@@ -557,6 +557,18 @@ describe("Validator Decorator Tests", () => {
         expect(result.issues).toMatchObject([{ path: "property", messages: ["Invalid postal code"] }])
     })
 
+    test("slug", () => {
+        @reflect.parameterProperties()
+        class Dummy {
+            constructor(
+                @val.slug()
+                public property: string
+            ) { }
+        }
+        const result = convert({ property: "-not-slug" }, { ...option, type: Dummy, })
+        expect(result.issues).toMatchObject([{ path: "property", messages: ["Invalid slug"] }])
+    })
+
     test("surrogatePair", () => {
         @reflect.parameterProperties()
         class Dummy {
