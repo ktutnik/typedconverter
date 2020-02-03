@@ -116,7 +116,10 @@ function objectVisitor(value: any, ast: ObjectNode, opt: VisitorOption): Result 
 }
 
 function visitor(value: any, ast: SuperNode, opt: VisitorOption): Result {
-    if (value === undefined || value === null || value.constructor === ast.type || ast.type === Object) return { value }
+    if (value === undefined || value === null)
+        return { value }
+    if (value.constructor === ast.type || ast.type === Object)
+        return { value: ast.kind === "Array" && opt.guessArrayElement && !Array.isArray(value) ? [value] : value }
     return visitorMap[ast.kind](value, ast as any, opt)
 }
 
