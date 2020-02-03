@@ -32,6 +32,15 @@ describe("Array Converter", () => {
         ])
     })
 
+    it("Should convert array of Object as is", () => {
+        const result = convert([
+            { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-2-2" },
+            { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-2-2" },
+            { id: "200", name: "Mimi", deceased: "ON", birthday: "2018-2-2" }
+        ], { type: [Object] })
+        expect(result.value).toMatchSnapshot()
+    })
+
     it("Should convert nested array inside model", () => {
         @reflect.parameterProperties()
         class TagModel {
@@ -107,8 +116,16 @@ describe("Array Converter", () => {
         expect(result.issues).toEqual([{ path: "1.tags.1.id", messages: ["Unable to convert \"Hello\" into Number"] }])
     })
 
-    it("Should able to guess non array for single element as element if defined", () => {
+})
+
+describe("Guess Array Element", () => {
+    it("Should able to guess single value as Array based on type", () => {
         const b = convert("1234", { type: [Number], guessArrayElement: true })
         expect(b.value).toEqual([1234])
+    })
+
+    it("Should work for array of Object", () => {
+        const b = convert("1234", { type: [Object], guessArrayElement: true })
+        expect(b.value).toEqual(["1234"])
     })
 })
