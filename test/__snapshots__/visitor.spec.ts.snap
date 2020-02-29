@@ -20,6 +20,10 @@ Object {
             "deco": Array [
               Object {
                 "type": "deco",
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
               },
             ],
             "val": 12,
@@ -37,6 +41,10 @@ Object {
             "deco": Array [
               Object {
                 "type": "deco",
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
               },
             ],
             "val": 40,
@@ -54,6 +62,10 @@ Object {
             "deco": Array [
               Object {
                 "type": "deco",
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
               },
             ],
             "val": 12,
@@ -78,6 +90,10 @@ Object {
         "deco": Array [
           Object {
             "type": "age",
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "inherit": true,
+            },
           },
         ],
         "val": 12,
@@ -90,6 +106,10 @@ Object {
         "deco": Array [
           Object {
             "type": "name",
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "inherit": true,
+            },
           },
         ],
         "val": "Mimi",
@@ -123,6 +143,10 @@ Object {
             "deco": Array [
               Object {
                 "type": "deco",
+                Symbol(tinspector:decoratorOption): Object {
+                  "allowMultiple": true,
+                  "inherit": true,
+                },
               },
             ],
             "val": 12,
@@ -175,6 +199,10 @@ Object {
               "decorators": Array [
                 Object {
                   "type": "deco",
+                  Symbol(tinspector:decoratorOption): Object {
+                    "allowMultiple": true,
+                    "inherit": true,
+                  },
                 },
               ],
               "type": Tag,
@@ -234,9 +262,18 @@ Object {
                     Object {
                       "kind": "Array",
                       "type": Tag,
+                      Symbol(tinspector:decoratorId): Symbol(array),
+                      Symbol(tinspector:decoratorOption): Object {
+                        "allowMultiple": false,
+                        "inherit": true,
+                      },
                     },
                     Object {
                       "type": "deco",
+                      Symbol(tinspector:decoratorOption): Object {
+                        "allowMultiple": true,
+                        "inherit": true,
+                      },
                     },
                   ],
                   "type": Tag,
@@ -270,9 +307,18 @@ Object {
                     Object {
                       "kind": "Array",
                       "type": Tag,
+                      Symbol(tinspector:decoratorId): Symbol(array),
+                      Symbol(tinspector:decoratorOption): Object {
+                        "allowMultiple": false,
+                        "inherit": true,
+                      },
                     },
                     Object {
                       "type": "deco",
+                      Symbol(tinspector:decoratorOption): Object {
+                        "allowMultiple": true,
+                        "inherit": true,
+                      },
                     },
                   ],
                   "type": Tag,
