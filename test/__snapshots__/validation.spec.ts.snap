@@ -153,7 +153,12 @@ Object {
   "methods": Array [
     Object {
       "decorators": Array [
-        Object {},
+        Object {
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "inherit": true,
+          },
+        },
       ],
       "kind": "Method",
       "name": "save",
@@ -164,10 +169,19 @@ Object {
               "info": "Partial",
               "kind": "Override",
               "type": AnimalClass,
+              Symbol(tinspector:decoratorId): Symbol(override),
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": false,
+                "inherit": true,
+              },
             },
             Object {
               "type": "tc:validator",
               "validator": Symbol(tc:partial),
+              Symbol(tinspector:decoratorOption): Object {
+                "allowMultiple": true,
+                "inherit": true,
+              },
             },
           ],
           "kind": "Parameter",
@@ -223,6 +237,10 @@ Object {
           Object {
             "type": "tc:validator",
             "validator": Symbol(tc:required),
+            Symbol(tinspector:decoratorOption): Object {
+              "allowMultiple": true,
+              "inherit": true,
+            },
           },
         ],
         "kind": "Parameter",
@@ -236,6 +254,11 @@ Object {
   "decorators": Array [
     Object {
       "type": "ParameterProperties",
+      Symbol(tinspector:decoratorId): Symbol(paramProp),
+      Symbol(tinspector:decoratorOption): Object {
+        "allowMultiple": false,
+        "inherit": true,
+      },
     },
   ],
   "kind": "Class",
@@ -271,6 +294,10 @@ Object {
         Object {
           "type": "tc:validator",
           "validator": Symbol(tc:required),
+          Symbol(tinspector:decoratorOption): Object {
+            "allowMultiple": true,
+            "inherit": true,
+          },
         },
       ],
       "get": undefined,
