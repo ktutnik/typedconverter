@@ -1,19 +1,12 @@
 import reflect, { decorateMethod } from "tinspector"
 
-import {
-    PartialValidator,
-    val,
-    validate,
-    ValidatorDecorator,
-    VisitorInvocation,
-    Result,
-} from "../src"
-import { RequiredValidator } from '../src/validation'
+import { PartialValidator, Result, val, validate, ValidatorDecorator, VisitorInvocation } from "../src"
+import { RequiredValidator } from "../src/validation"
 
 const required = <ValidatorDecorator>{ type: "tc:validator", validator: RequiredValidator }
 
 
-describe("Optional & Partial Validation", () => {
+describe("Required Validator and Partial", () => {
     describe("Decorators", () => {
         it("Should able to decorate required validator", () => {
             @reflect.parameterProperties()

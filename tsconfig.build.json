@@ -8,6 +8,7 @@
   },
   "exclude": [
     "test",
-    "lib"
+    "lib", 
+    "benchmark"
   ]
 }

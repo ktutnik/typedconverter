@@ -1,1 +1,1 @@
-export type Class = new (...args: any[]) => any
+export type Class<T = any> = new (...args: any[]) => T

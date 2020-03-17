@@ -11,11 +11,13 @@ import {
 } from "./validation"
 import { pipeline, Result, ResultMessages } from "./visitor"
 
-interface Option {
+
+
+interface Option<T = any> {
     /**
      * Expected type
      */
-    type: Class | Class[],
+    type: T,
 
     /**
      * List of visitor extension to extend TypedConverter internal process
@@ -43,29 +45,35 @@ interface Option {
  * @param value 
  * @param opt 
  */
-function convert(value: any, opt: Option) {
-    return pipeline(value, transform(opt.type), {
+function convert<T = any>(value: any, option: Option<T> | T): T extends Class<infer R>[] ? Result<R[]> : T extends Class<infer R> ? Result<R> : Result<any> {
+    const opt = "type" in option ? option : { type: option }
+    return pipeline(value, transform(opt.type as any), {
         path: opt.path || "", extension: opt.visitors || [],
         decorators: opt.decorators || [],
         guessArrayElement: opt.guessArrayElement || false
-    })
+    }) as any
 }
 
 /**
  * Create type converter with specific configuration
  * @param option 
  */
-export default function createConverter(option: Option) {
-    return (value: any) => convert(value, option)
+export default function createConverter<T = any>(option: Option<T> | T) {
+    return (value: any) => convert<T>(value, option)
 }
 
-function validate(value: any, opt: Option) {
+function createValidator<T>(option: T | Option<T>) {
+    return (value: any) => validate<T>(value, option)
+}
+
+function validate<T>(value: any, option: Option<T> | T) {
+    const opt = "type" in option ? option : { type: option }
     const visitors = [validatorVisitor]
     for (const visitor of (opt.visitors || [])) {
         visitors.push(visitor)
     }
-    return convert(value, { 
-        decorators: opt.decorators, guessArrayElement: opt.guessArrayElement, 
+    return convert(value, {
+        decorators: opt.decorators, guessArrayElement: opt.guessArrayElement,
         path: opt.path, type: opt.type, visitors
     })
 }
@@ -74,5 +82,5 @@ export {
     convert, Option, VisitorExtension,
     VisitorInvocation, Result, ResultMessages,
     partial, validatorVisitor, Validator,
-    PartialValidator, val, Opt, validate, ValidatorDecorator
+    PartialValidator, val, Opt, validate, createValidator, ValidatorDecorator
 }

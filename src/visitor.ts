@@ -14,8 +14,8 @@ interface ResultMessages {
     messages: string[]
 }
 
-interface Result {
-    value: any,
+interface Result<T = any> {
+    value: T,
     issues?: ResultMessages[]
 }
 

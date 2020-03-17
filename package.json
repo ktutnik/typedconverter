@@ -13,7 +13,7 @@
     "prepublish": "tsc -p tsconfig.build.json",
     "gen": "ts-node src/generator.ts",
     "clean": "rm -rf src/*.js && rm -rf test/*.js && rm -rf lib",
-    "benchmark": "ts-node test/benchmark.ts"
+    "benchmark": "ts-node benchmark/index.ts"
   },
   "author": "Ketut Sandiarsa",
   "license": "MIT",
@@ -26,14 +26,16 @@
   "devDependencies": {
     "@types/ejs": "^3.0.1",
     "@types/jest": "^25.1.4",
-    "@types/joi": "^14.3.4",
+    "@types/hapi__joi": "^16.0.12",
+    "@types/lodash": "^4.14.149",
     "coveralls": "^3.0.9",
     "ejs": "^3.0.1",
     "jest": "^25.1.0",
-    "joi": "^14.3.1",
+    "@hapi/joi": "^17.1.1",
     "ts-jest": "^25.2.1",
     "ts-node": "^8.6.2",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "lodash": "^4.17.15"
   },
   "bugs": {
     "url": "https://github.com/plumier/plumier/issues"
