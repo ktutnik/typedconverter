@@ -3202,10 +3202,10 @@ throat@^5.0.0:
   resolved "https://registry.yarnpkg.com/throat/-/throat-5.0.0.tgz#c5199235803aad18754a667d659b5e72ce16764b"
   integrity sha512-fcwX4mndzpLQKBS1DVYhGAcYaYt7vsHNIvQV+WXMvnow5cgjPphq5CaayLaGsjRdSCKZFNGt7/GYAuXaNOiYCA==
 
-tinspector@^2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/tinspector/-/tinspector-2.3.1.tgz#65de61d20feb4f8df2d7a9902292793509dd0e75"
-  integrity sha512-5O1m6QHcP8yA3uk4psTVe2qGvJCWuNl1hA+safJSKUdv8YWKN2jfNbXnJnjWgIcZr9nsZNMtK33yMUSLcBvUaQ==
+tinspector@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/tinspector/-/tinspector-3.0.0.tgz#aba86f8a33b3658d4beb4b56147ad89c9f73b181"
+  integrity sha512-/2HSr0Wvye/TrjhTmsijKRG5Th7sBLVCVsUXZwnvDcIVutNBonCC5zCnbvz9mb596v/P6xokYMQxaXR8HYqgAw==
   dependencies:
     "@types/acorn" "4.0.5"
     acorn "7.1.1"
