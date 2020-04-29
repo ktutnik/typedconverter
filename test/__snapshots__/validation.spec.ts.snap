@@ -162,12 +162,16 @@ Object {
       ],
       "kind": "Method",
       "name": "save",
+      "owner": Array [
+        AnimalController,
+      ],
       "parameters": Array [
         Object {
           "decorators": Array [
             Object {
               "info": "Partial",
               "kind": "Override",
+              "target": AnimalController,
               "type": AnimalClass,
               Symbol(tinspector:decoratorId): Symbol(override),
               Symbol(tinspector:decoratorOption): Object {
@@ -184,9 +188,13 @@ Object {
               },
             },
           ],
+          "fields": Object {},
+          "index": 0,
           "kind": "Parameter",
           "name": "data",
-          "properties": Object {},
+          "owner": Array [
+            AnimalController,
+          ],
           "type": AnimalClass,
           "typeClassification": "Class",
         },
@@ -196,7 +204,12 @@ Object {
     },
   ],
   "name": "AnimalController",
+  "owner": Array [
+    Object,
+    AnimalController,
+  ],
   "properties": Array [],
+  "super": Object,
   "type": AnimalController,
   "typeClassification": "Class",
 }
@@ -210,25 +223,37 @@ Object {
     "parameters": Array [
       Object {
         "decorators": Array [],
+        "fields": Object {},
+        "index": 0,
         "kind": "Parameter",
         "name": "id",
-        "properties": Object {},
+        "owner": Array [
+          AnimalClass,
+        ],
         "type": Number,
         "typeClassification": "Primitive",
       },
       Object {
         "decorators": Array [],
+        "fields": Object {},
+        "index": 1,
         "kind": "Parameter",
         "name": "name",
-        "properties": Object {},
+        "owner": Array [
+          AnimalClass,
+        ],
         "type": String,
         "typeClassification": "Primitive",
       },
       Object {
         "decorators": Array [],
+        "fields": Object {},
+        "index": 2,
         "kind": "Parameter",
         "name": "deceased",
-        "properties": Object {},
+        "owner": Array [
+          AnimalClass,
+        ],
         "type": Boolean,
         "typeClassification": "Primitive",
       },
@@ -243,9 +268,13 @@ Object {
             },
           },
         ],
+        "fields": Object {},
+        "index": 3,
         "kind": "Parameter",
         "name": "birthday",
-        "properties": Object {},
+        "owner": Array [
+          AnimalClass,
+        ],
         "type": Date,
         "typeClassification": "Primitive",
       },
@@ -264,30 +293,52 @@ Object {
   "kind": "Class",
   "methods": Array [],
   "name": "AnimalClass",
+  "owner": Array [
+    Object,
+    AnimalClass,
+  ],
   "properties": Array [
     Object {
       "decorators": Array [],
       "get": undefined,
+      "index": 0,
+      "isParameter": true,
       "kind": "Property",
       "name": "id",
+      "owner": Array [
+        AnimalClass,
+      ],
       "set": undefined,
       "type": Number,
+      "typeClassification": "Primitive",
     },
     Object {
       "decorators": Array [],
       "get": undefined,
+      "index": 1,
+      "isParameter": true,
       "kind": "Property",
       "name": "name",
+      "owner": Array [
+        AnimalClass,
+      ],
       "set": undefined,
       "type": String,
+      "typeClassification": "Primitive",
     },
     Object {
       "decorators": Array [],
       "get": undefined,
+      "index": 2,
+      "isParameter": true,
       "kind": "Property",
       "name": "deceased",
+      "owner": Array [
+        AnimalClass,
+      ],
       "set": undefined,
       "type": Boolean,
+      "typeClassification": "Primitive",
     },
     Object {
       "decorators": Array [
@@ -301,12 +352,19 @@ Object {
         },
       ],
       "get": undefined,
+      "index": 3,
+      "isParameter": true,
       "kind": "Property",
       "name": "birthday",
+      "owner": Array [
+        AnimalClass,
+      ],
       "set": undefined,
       "type": Date,
+      "typeClassification": "Primitive",
     },
   ],
+  "super": Object,
   "type": AnimalClass,
   "typeClassification": "Class",
 }
