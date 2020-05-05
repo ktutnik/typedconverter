@@ -7,7 +7,8 @@ import {
     PartialValidator,
     Validator,
     validatorVisitor,
-    ValidatorDecorator
+    ValidatorDecorator,
+    RequiredValidator,
 } from "./validation"
 import { pipeline, Result, ResultMessages } from "./visitor"
 
@@ -82,5 +83,6 @@ export {
     convert, Option, VisitorExtension,
     VisitorInvocation, Result, ResultMessages,
     partial, validatorVisitor, Validator,
-    PartialValidator, val, Opt, validate, createValidator, ValidatorDecorator
+    PartialValidator, val, Opt, validate, createValidator, ValidatorDecorator,
+    RequiredValidator
 }
