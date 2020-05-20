@@ -100,4 +100,28 @@ describe("Nested Model", () => {
         })
         expect(result.issues).toEqual([{ path: "owner", messages: [`Unable to convert "Hello" into ClientClass`] }])
     })
+
+    it("Should not error when provided nested model with cross dependency", () => {
+        @reflect.parameterProperties()
+        class AnimalClass {
+            constructor(
+                public name: string,
+                @reflect.type(x => ClientClass)
+                public client: any
+            ) { }
+        }
+
+        @reflect.parameterProperties()
+        class ClientClass {
+            constructor(
+                public name: string,
+                @reflect.type(x => AnimalClass)
+                public animal: any
+            ) { }
+        }
+        const convert = createConverter({ type: AnimalClass })
+        const result = convert(<AnimalClass>{ name: "Mimi", client: { name: "Hola" } })
+        expect(result.value).toBeInstanceOf(AnimalClass)
+        expect(result.value).toMatchSnapshot()
+    })
 })
