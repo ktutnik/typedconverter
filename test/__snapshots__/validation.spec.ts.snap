@@ -162,21 +162,18 @@ Object {
       ],
       "kind": "Method",
       "name": "save",
-      "owner": Array [
-        AnimalController,
-      ],
       "parameters": Array [
         Object {
           "decorators": Array [
             Object {
-              "info": "Partial",
+              "genericParams": Array [],
               "kind": "Override",
               "target": AnimalController,
               "type": AnimalClass,
               Symbol(tinspector:decoratorId): Symbol(override),
               Symbol(tinspector:decoratorOption): Object {
                 "allowMultiple": false,
-                "inherit": true,
+                "inherit": false,
               },
             },
             Object {
@@ -192,9 +189,6 @@ Object {
           "index": 0,
           "kind": "Parameter",
           "name": "data",
-          "owner": Array [
-            AnimalController,
-          ],
           "type": AnimalClass,
           "typeClassification": "Class",
         },
@@ -204,10 +198,6 @@ Object {
     },
   ],
   "name": "AnimalController",
-  "owner": Array [
-    Object,
-    AnimalController,
-  ],
   "properties": Array [],
   "super": Object,
   "type": AnimalController,
@@ -227,9 +217,6 @@ Object {
         "index": 0,
         "kind": "Parameter",
         "name": "id",
-        "owner": Array [
-          AnimalClass,
-        ],
         "type": Number,
         "typeClassification": "Primitive",
       },
@@ -239,9 +226,6 @@ Object {
         "index": 1,
         "kind": "Parameter",
         "name": "name",
-        "owner": Array [
-          AnimalClass,
-        ],
         "type": String,
         "typeClassification": "Primitive",
       },
@@ -251,9 +235,6 @@ Object {
         "index": 2,
         "kind": "Parameter",
         "name": "deceased",
-        "owner": Array [
-          AnimalClass,
-        ],
         "type": Boolean,
         "typeClassification": "Primitive",
       },
@@ -272,9 +253,6 @@ Object {
         "index": 3,
         "kind": "Parameter",
         "name": "birthday",
-        "owner": Array [
-          AnimalClass,
-        ],
         "type": Date,
         "typeClassification": "Primitive",
       },
@@ -293,10 +271,6 @@ Object {
   "kind": "Class",
   "methods": Array [],
   "name": "AnimalClass",
-  "owner": Array [
-    Object,
-    AnimalClass,
-  ],
   "properties": Array [
     Object {
       "decorators": Array [],
@@ -305,9 +279,6 @@ Object {
       "isParameter": true,
       "kind": "Property",
       "name": "id",
-      "owner": Array [
-        AnimalClass,
-      ],
       "set": undefined,
       "type": Number,
       "typeClassification": "Primitive",
@@ -319,9 +290,6 @@ Object {
       "isParameter": true,
       "kind": "Property",
       "name": "name",
-      "owner": Array [
-        AnimalClass,
-      ],
       "set": undefined,
       "type": String,
       "typeClassification": "Primitive",
@@ -333,9 +301,6 @@ Object {
       "isParameter": true,
       "kind": "Property",
       "name": "deceased",
-      "owner": Array [
-        AnimalClass,
-      ],
       "set": undefined,
       "type": Boolean,
       "typeClassification": "Primitive",
@@ -356,9 +321,6 @@ Object {
       "isParameter": true,
       "kind": "Property",
       "name": "birthday",
-      "owner": Array [
-        AnimalClass,
-      ],
       "set": undefined,
       "type": Date,
       "typeClassification": "Primitive",

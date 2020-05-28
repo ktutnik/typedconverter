@@ -260,13 +260,16 @@ Object {
                 "parent": Object {
                   "decorators": Array [
                     Object {
-                      "kind": "Array",
+                      "genericParams": Array [],
+                      "kind": "Override",
                       "target": Animal,
-                      "type": Tag,
-                      Symbol(tinspector:decoratorId): Symbol(array),
+                      "type": Array [
+                        Tag,
+                      ],
+                      Symbol(tinspector:decoratorId): Symbol(override),
                       Symbol(tinspector:decoratorOption): Object {
                         "allowMultiple": false,
-                        "inherit": true,
+                        "inherit": false,
                       },
                     },
                     Object {
@@ -306,13 +309,16 @@ Object {
                 "parent": Object {
                   "decorators": Array [
                     Object {
-                      "kind": "Array",
+                      "genericParams": Array [],
+                      "kind": "Override",
                       "target": Animal,
-                      "type": Tag,
-                      Symbol(tinspector:decoratorId): Symbol(array),
+                      "type": Array [
+                        Tag,
+                      ],
+                      Symbol(tinspector:decoratorId): Symbol(override),
                       Symbol(tinspector:decoratorOption): Object {
                         "allowMultiple": false,
-                        "inherit": true,
+                        "inherit": false,
                       },
                     },
                     Object {
