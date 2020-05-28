@@ -226,7 +226,7 @@ describe("Parent Distribution", () => {
         class Animal {
             constructor(
                 @decorateProperty({ type: "deco" })
-                @reflect.array(Tag)
+                @reflect.type([Tag])
                 public tag: Tag[]) { }
         }
 

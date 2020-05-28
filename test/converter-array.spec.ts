@@ -56,7 +56,7 @@ describe("Array Converter", () => {
                 public name: string,
                 public deceased: boolean,
                 public birthday: Date,
-                @reflect.array(TagModel)
+                @reflect.type([TagModel])
                 public tags: TagModel[]
             ) { }
         }
@@ -101,7 +101,7 @@ describe("Array Converter", () => {
                 public name: string,
                 public deceased: boolean,
                 public birthday: Date,
-                @reflect.array(TagModel)
+                @reflect.type([TagModel])
                 public tags: TagModel[]
             ) { }
         }

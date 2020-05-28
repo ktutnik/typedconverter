@@ -22,9 +22,8 @@ function required() {
 }
 
 function partial(type: Class) {
-    return mergeDecorator(reflect.type(type, "Partial"), createValidation(PartialValidator))
+    return mergeDecorator(reflect.type(type), createValidation(PartialValidator))
 }
-
 
 // --------------------------------------------------------------------- //
 // ------------------------------ HELPERS ------------------------------ //
