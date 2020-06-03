@@ -1,4 +1,4 @@
-import reflect, { decorateProperty, decorate, mergeDecorator } from "tinspector";
+import reflect, { decorateProperty, decorate, mergeDecorator, TypeOverride } from "tinspector";
 import { VisitorInvocation } from './invocation';
 import { Result } from './visitor';
 import { Class } from './types';
@@ -21,7 +21,7 @@ function required() {
     return createValidation(RequiredValidator)
 }
 
-function partial(type: Class) {
+function partial(type: TypeOverride | ((x: any) => TypeOverride)) {
     return mergeDecorator(reflect.type(type), createValidation(PartialValidator))
 }
 
