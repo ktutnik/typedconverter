@@ -1,6 +1,7 @@
+import { TypeOverride } from "tinspector"
 import validatorJs from "validator"
-import * as v from './validation';
-import { Class } from './types';
+
+import * as v from "./validation"
 
 interface Opt { message?: string }
 
@@ -209,7 +210,7 @@ namespace val {
         return v.required()
     }
 
-    export function partial(typ: Class) {
+    export function partial(typ: TypeOverride | ((x: any) => TypeOverride)) {
         return v.partial(typ)
     }
 }
