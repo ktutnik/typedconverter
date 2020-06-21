@@ -42,5 +42,6 @@
   },
   "repository": {
     "url": "https://github.com/plumier/typedconverter"
-  }
+  }, 
+  "private": true
 }
