@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "test": "jest",
-    "prepublish": "tsc -p tsconfig.build.json",
+    "compile": "tsc -p tsconfig.build.json",
     "gen": "ts-node src/generator.ts",
     "clean": "rm -rf src/*.js && rm -rf test/*.js && rm -rf lib",
     "benchmark": "ts-node benchmark/index.ts"
