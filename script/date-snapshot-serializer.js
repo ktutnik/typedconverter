@@ -1,15 +1,34 @@
-/**
- * This module will serialize function as [typeof: <Function Name>] instead of [Function]
- */
+
+function extractValues(date) {
+    return {
+        year: date.getFullYear(),
+        month: date.getMonth(),
+        date: date.getDate()
+    }
+}
+
+function isToday(date) {
+    var today = extractValues(new Date());
+    var value = extractValues(date);
+
+    if (
+        today.year !== value.year ||
+        today.month !== value.month ||
+        today.date !== value.date
+    ) {
+        return false;
+    }
+
+    return true;
+}
+
 module.exports = {
     test(val) {
-        return val instanceof Date;
+        return val && typeof val === 'object' && 'getFullYear' in val
     },
-    print(d) {
-        return [
-            d.getFullYear(),
-            ('0' + (d.getMonth() + 1)).slice(-2),
-            ('0' + d.getDate()).slice(-2)
-        ].join('-');
+    print(val) {
+        if(isToday(val)) return "DATE NOW"
+        var d = extractValues(val);
+        return [d.year, d.month, d.date].join('-');
     },
 }

@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "test": "jest",
-    "prepublish": "tsc -p tsconfig.build.json",
+    "compile": "tsc -p tsconfig.build.json",
     "gen": "ts-node src/generator.ts",
     "clean": "rm -rf src/*.js && rm -rf test/*.js && rm -rf lib",
     "benchmark": "ts-node benchmark/index.ts"
@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "@types/validator": "^13.0.0",
-    "tinspector": "^3.1.0",
+    "tinspector": "3.2.2",
     "tslib": "^2.0.0",
     "validator": "^13.0.0"
   },
