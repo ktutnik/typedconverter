@@ -6,6 +6,11 @@
     "importHelpers": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "baseUrl": ".",
+    "paths": {
+      // required in plumier monorepo
+      "tinspector": ["../tinspector/src/index"]
+    }
   }
 }

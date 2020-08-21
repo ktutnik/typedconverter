@@ -14,5 +14,9 @@ module.exports = {
       lines: 100,
       statements: 100
     }
-  }
+  },
+  rootDir: ".",
+  moduleNameMapper: {
+    "^tinspector$": "<rootDir>../tinspector/src/index.ts",
+  },
 };
