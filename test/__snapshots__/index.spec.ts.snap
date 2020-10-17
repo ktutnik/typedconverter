@@ -11,6 +11,12 @@ Object {
   "convert": convert,
   "createValidator": createValidator,
   "default": createConverter,
+  "defaultConverters": Map {
+    Boolean => booleanConverter,
+    Date => dateConverter,
+    Number => numberConverter,
+    String => stringConverter,
+  },
   "partial": partial,
   "val": Object {
     "UUID": UUID,
