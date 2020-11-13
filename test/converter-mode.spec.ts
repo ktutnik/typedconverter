@@ -51,6 +51,22 @@ describe("Model Converter", () => {
         expect(result.value).toEqual({})
     })
 
+    it("Should allow undefined value when provided", () => {
+        @reflect.parameterProperties()
+        class AnimalClass {
+            constructor(
+                public id: number,
+                public name: string,
+                public deceased: boolean,
+                public birthday: Date
+            ) { }
+        }
+
+        const result = convert({ id: undefined }, { type: AnimalClass })
+        expect(result.value).toBeInstanceOf(AnimalClass)
+        expect(result.value).toMatchSnapshot()
+    })
+
     it("Should throw if provided non convertible value", () => {
         @reflect.parameterProperties()
         class AnimalClass {
