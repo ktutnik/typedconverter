@@ -49,6 +49,7 @@ Object {
     AnimalClass {
       "birthday": 2018-1-2,
       "deceased": true,
+      "id": null,
       "name": "Mimi",
     },
   ],
@@ -70,6 +71,7 @@ Object {
     AnimalClass {
       "birthday": 2018-1-2,
       "deceased": true,
+      "id": undefined,
       "name": "Mimi",
     },
   ],
@@ -354,6 +356,7 @@ Object {
     "name": "Mimi",
     "tag": TagClass {
       "id": 123,
+      "name": null,
     },
   },
 }
@@ -366,6 +369,7 @@ Object {
     "id": 123,
     "tag": TagClass {
       "id": 123,
+      "name": undefined,
     },
   },
 }
@@ -410,6 +414,7 @@ Object {
     "id": 123,
     "name": "Mimi",
     "tag": TagClass {
+      "id": null,
       "name": "The Tag",
     },
   },
@@ -432,6 +437,7 @@ Object {
     "id": 123,
     "name": "Mimi",
     "tag": TagClass {
+      "id": undefined,
       "name": "The Tag",
     },
   },
@@ -442,7 +448,10 @@ exports[`Required Validator and Partial Object Validator Should valid if provide
 Object {
   "issues": undefined,
   "value": AnimalClass {
+    "birthday": null,
+    "deceased": null,
     "id": 123,
+    "name": null,
   },
 }
 `;
@@ -488,6 +497,7 @@ Object {
   "value": AnimalClass {
     "birthday": 2018-1-2,
     "deceased": true,
+    "id": null,
     "name": "Mimi",
   },
 }
@@ -506,6 +516,7 @@ Object {
   "value": AnimalClass {
     "birthday": 2018-1-2,
     "deceased": true,
+    "id": undefined,
     "name": "Mimi",
   },
 }
