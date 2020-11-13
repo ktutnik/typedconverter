@@ -503,6 +503,24 @@ Object {
 }
 `;
 
+exports[`Required Validator and Partial Object Validator Should validate required validation if property not provided 1`] = `
+Object {
+  "issues": Array [
+    Object {
+      "messages": Array [
+        "Required",
+      ],
+      "path": "id",
+    },
+  ],
+  "value": AnimalClass {
+    "birthday": 2018-1-2,
+    "deceased": true,
+    "name": "Mimi",
+  },
+}
+`;
+
 exports[`Required Validator and Partial Object Validator Should validate undefined property if required 1`] = `
 Object {
   "issues": Array [

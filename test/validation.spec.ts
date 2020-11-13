@@ -128,6 +128,11 @@ describe("Required Validator and Partial", () => {
             expect(result).toMatchSnapshot()
         })
 
+        it("Should validate required validation if property not provided", () => {
+            const result = validate({ name: "Mimi", deceased: "ON", birthday: "2018-2-2" }, { ...option })
+            expect(result).toMatchSnapshot()
+        })
+
         it("Should valid if provided null if not required", () => {
             const result = validate({ id: "123", name: null, deceased: null, birthday: null }, { ...option })
             expect(result).toMatchSnapshot()

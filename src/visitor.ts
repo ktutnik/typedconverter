@@ -103,7 +103,6 @@ function objectVisitor(value: any, ast: ObjectNode, opt: VisitorOption): Result 
     for (const property of meta.properties) {
         const node = ast.properties.get(property.name) as SuperNode
         // if the property is not provided, then skip
-        if(!props[property.name]) continue
         const option = {
             path: getPath(opt.path, property.name), extension: opt.extension,
             decorators: property.decorators, parent: { value, type: ast.type, decorators: opt.decorators },
@@ -112,6 +111,7 @@ function objectVisitor(value: any, ast: ObjectNode, opt: VisitorOption): Result 
         const propValue = pipeline(value[property.name], node, option)
         if (propValue.issues)
             errors.push(...propValue.issues)
+        if (!props[property.name]) continue
         instance[property.name] = propValue.value
     }
     return { value: instance, issues: errors.length === 0 ? undefined : errors }
