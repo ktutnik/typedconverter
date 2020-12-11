@@ -1,4 +1,7 @@
 # TypedConverter
+
+This project renamed into `@plumier/validator` https://github.com/plumier/plumier/tree/master/packages/validator
+
 Convert object into classes match with TypeScript type annotation
 
 [![Build Status](https://travis-ci.org/plumier/typedconverter.svg?branch=master)](https://travis-ci.org/plumier/typedconverter)
