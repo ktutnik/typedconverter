@@ -1,5 +1,6 @@
+import reflect from "tinspector"
+
 import { convert, val, validatorVisitor } from "../src"
-import reflect from 'tinspector';
 
 const option = { visitors: [validatorVisitor] }
 
